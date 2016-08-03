@@ -1,0 +1,16 @@
+<ion-view title="Google Translate" id="page2" class=" ">
+    <ion-content padding="true" class="has-header">
+        <form id="googleTranslate-form1" class="list ">
+            <label class="item item-input " id="googleTranslate-input1">
+                <span class="input-label">Input</span>
+                <input type="text" placeholder="">
+            </label>
+          <button id="googleTranslate-button1" class=" button button-positive  button-block "
+          ng-click="updateHtml()">Translate</button>
+        </form>
+        <div>
+            <p ng-bind-html="html">
+            </p>
+        </div>
+    </ion-content>
+</ion-view>
