@@ -1,12 +1,13 @@
 <ion-view title="Google Translate" id="page2" class=" ">
     <ion-content padding="true" class="has-header">
         <form id="googleTranslate-form1" class="list ">
-            <label class="item item-input " id="googleTranslate-input1">
-                <span class="input-label">Input</span>
-                <input type="text" placeholder="">
-            </label>
-          <button id="googleTranslate-button1" class=" button button-positive  button-block "
-          ng-click="updateHtml()">Translate</button>
+
+            <input ion-autocomplete type="text" readonly="readonly" class="ion-autocomplete" autocomplete="off"
+                   max-selected-items="1" ng-model="test1" items-method="callbackMethod(query)" />
+
+            <button id="googleTranslate-button1" class=" button button-positive  button-block "
+                    ng-click="updateHtml()">Translate
+            </button>
         </form>
         <div>
             <p ng-bind-html="html">

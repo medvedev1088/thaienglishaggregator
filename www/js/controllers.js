@@ -23,6 +23,10 @@ angular.module('app.controllers', [])
                 });
 
 
+            };
+
+            $scope.callbackMethod = function (query, isInitializing) {
+                return ['asdf', 'qwer'];
             }
 
         }])
