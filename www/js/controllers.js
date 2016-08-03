@@ -5,15 +5,15 @@ angular.module('app.controllers', [])
             $scope.updateHtml = function() {
                 $http({
                     method: 'GET',
-                    url: 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=th&tl=en&dt=t&q=ใจ',
+                    url: 'https://inputtools.google.com/request?text=ja&itc=th-t-i0-und&num=13&cp=0&cs=1&ie=utf-8&oe=utf-8&app=translate&cb=_callbacks____1ireyntgb',
                     transformResponse: [function (data) {
                         return data;
                     }]
                 }).then(function successCallback(response) {
 
-                    var json = eval(response.data);
+                    // var json = eval(response.data);
                     console.log(response.data);
-                    $scope.html = json[0][0][0];
+                    $scope.html = response.data;
 
 
                 }, function errorCallback(response) {
