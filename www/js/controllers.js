@@ -1,9 +1,3 @@
-var removeHostAndPort = function (url) {
-    var newURL = url.replace(/.*\/\/[^\/]*/, '');
-    console.log(newURL);
-    return newURL;
-};
-
 var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicPopup, Thai2englishUrl) {
     var $ = window.jQuery;
     console.log($stateParams);
@@ -150,41 +144,34 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
             httpParams = getThai2EnglishParams(q);
         }
 
-        var callApi = function(firstTimeFailed) {
-            if (firstTimeFailed) {
-                console.log('url');
-                httpParams.url = removeHostAndPort(httpParams.url);
+        $http(httpParams).then(function successCallback(response) {
+            console.log(response);
+            var responseData = response.data;
+
+            var translation;
+            if ($stateParams.tab === 'google') {
+                translation = convertGoogleToTranslation(responseData);
+            } else if ($stateParams.tab === 'thai2english') {
+                translation = convertThai2EnglishToTranslation(responseData);
             }
-            $http(httpParams).then(function successCallback(response) {
-                console.log(response);
-                var responseData = response.data;
 
-                var translation;
-                if ($stateParams.tab === 'google') {
-                    translation = convertGoogleToTranslation(responseData);
-                } else if ($stateParams.tab === 'thai2english') {
-                    translation = convertThai2EnglishToTranslation(responseData);
-                }
+            $scope.translation = {
+                t: '123'
+            };
 
-                $scope.translation = {
-                    t: '123'
-                };
+            copyProperties(translation, $scope.translation);
 
-                copyProperties(translation, $scope.translation);
-
-            }, function errorCallback(response) {
-                console.log(response);
-                if (!firstTimeFailed) {
-                    callApi(true);
-                } else {
-                    $ionicPopup.alert({
-                        title: 'Error!',
-                        template: response.data
-                    });
-                }
-            });
-        };
-        callApi(false);
+        }, function errorCallback(response) {
+            console.log(response);
+            if (!firstTimeFailed) {
+                callApi(true);
+            } else {
+                $ionicPopup.alert({
+                    title: 'Error!',
+                    template: response.data
+                });
+            }
+        });
     };
 };
 
