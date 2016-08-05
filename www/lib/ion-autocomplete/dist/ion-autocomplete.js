@@ -84,7 +84,7 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     '<div class="bar bar-header item-input-inset">',
                     '<label class="item-input-wrapper">',
                     '<i class="icon ion-search placeholder-icon"></i>',
-                    '<input type="search" class="ion-autocomplete-search" ng-model="viewModel.searchQuery" ng-model-options="viewModel.ngModelOptions" placeholder="{{viewModel.placeholder}}"/>',
+                    '<input type="search" class="ion-autocomplete-search" ng-model="viewModel.searchQuery" ng-model-options="viewModel.ngModelOptions" placeholder="Enter text"/>',
                     '</label>',
                     '<div class="ion-autocomplete-loading-icon" ng-if="viewModel.showLoadingIcon && viewModel.loadingIcon"><ion-spinner icon="{{viewModel.loadingIcon}}"></ion-spinner></div>',
                     '<button class="ion-autocomplete-cancel button button-clear" ng-click="viewModel.cancelClick()">{{viewModel.cancelLabel}}</button>',
@@ -157,7 +157,6 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                         var newSearchQuery = searchQuery.replace(ionAutocompleteController.searchQueryIncrement, item);
                         ionAutocompleteController.searchQuery = newSearchQuery;
                         ionAutocompleteController.searchQueryIncrement = '';
-                        searchInputElement.focus();
                         return;
                         // return if the max selected items is not equal to 1 and the maximum amount of selected items is reached
                         if (ionAutocompleteController.maxSelectedItems != "1" &&
@@ -322,6 +321,9 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                             searchInputElement[0].focus();
                             setTimeout(function () {
                                 searchInputElement[0].focus();
+                                searchInputElement.on('blur', function() {
+                                    searchInputElement[0].focus();
+                                });
                             }, 0);
                         }
 
@@ -334,7 +336,7 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     ionAutocompleteController.hideModal = function () {
                         angular.element($document[0].querySelector('div.ion-autocomplete-container.' + ionAutocompleteController.randomCssClass)).css('display', 'none');
                         ionAutocompleteController.searchQuery = undefined;
-                        $ionicBackdrop.release();
+                        // $ionicBackdrop.release();
                         scope.$deregisterBackButton && scope.$deregisterBackButton();
                         searchContainerDisplayed = false;
                     };
