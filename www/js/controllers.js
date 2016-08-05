@@ -1,3 +1,9 @@
+var removeHostAndPort = function (url) {
+    var newURL = url.replace(/.*\/\/[^\/]*/, '');
+    console.log(newURL);
+    return newURL;
+};
+
 var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicPopup, Thai2englishUrl) {
     var $ = window.jQuery;
     console.log($stateParams);
@@ -58,9 +64,10 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
     function convertThai2EnglishToTranslation(data) {
         data = JSON.parse(data);
         console.log(data);
-        var Query = $(data.Query);
-        var transcription = $.makeArray(Query.find('li.listTlitLine > span')).map(function(e) {return e.innerText}).join(' ');
-        console.log('Transcription', transcription);
+        //var Query = $(data.Query);
+        //var transcription = $.makeArray(Query.find('li.listTlitLine > span')).map(function(e) {return e.innerText}).join(' ');
+        //console.log('Transcription', transcription);
+        // translation.tr = transcription;
 
 
         var Sentences = data.Sentences;
@@ -76,7 +83,6 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
             })
         }
         var translation = {};
-        translation.tr = transcription;
         translation.words = words;
 
         return translation;
@@ -91,6 +97,11 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
     }
 
     $scope.updateHtml = function () {
+        // $ionicPopup.alert({
+        //     title: ionic.Platform.platforms.join(),
+        //     template: 'test'
+        // });
+
         var q = $scope.input.q;
 
         console.log('search query', q);
@@ -139,30 +150,41 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
             httpParams = getThai2EnglishParams(q);
         }
 
-        $http(httpParams).then(function successCallback(response) {
-            console.log(response);
-            var responseData = response.data;
-
-            var translation;
-            if ($stateParams.tab === 'google') {
-                translation = convertGoogleToTranslation(responseData);
-            } else if ($stateParams.tab === 'thai2english') {
-                translation = convertThai2EnglishToTranslation(responseData);
+        var callApi = function(firstTimeFailed) {
+            if (firstTimeFailed) {
+                console.log('url');
+                httpParams.url = removeHostAndPort(httpParams.url);
             }
+            $http(httpParams).then(function successCallback(response) {
+                console.log(response);
+                var responseData = response.data;
 
-            $scope.translation = {
-                t: '123'
-            };
+                var translation;
+                if ($stateParams.tab === 'google') {
+                    translation = convertGoogleToTranslation(responseData);
+                } else if ($stateParams.tab === 'thai2english') {
+                    translation = convertThai2EnglishToTranslation(responseData);
+                }
 
-            copyProperties(translation, $scope.translation);
+                $scope.translation = {
+                    t: '123'
+                };
 
-        }, function errorCallback(response) {
-            console.log(response);
-            $ionicPopup.alert({
-                title: 'Error!',
-                template: response.data
+                copyProperties(translation, $scope.translation);
+
+            }, function errorCallback(response) {
+                console.log(response);
+                if (!firstTimeFailed) {
+                    callApi(true);
+                } else {
+                    $ionicPopup.alert({
+                        title: 'Error!',
+                        template: response.data
+                    });
+                }
             });
-        });
+        };
+        callApi(false);
     };
 };
 
