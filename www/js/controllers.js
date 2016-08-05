@@ -182,6 +182,38 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
             }
         });
     };
+
+    $scope.callbackMethod = function (query, isInitializing) {
+        var q = query;
+
+        var promise = $http({
+            method: 'GET',
+            url: 'https://inputtools.google.com/request',
+            params: {
+                text: q,
+                itc: 'th-t-i0-und',
+                num: '13',
+                cp: '0',
+                cs: '1',
+                ie: 'utf-8',
+                oe: 'utf-8',
+                app: 'translate'
+            },
+            transformResponse: [function (data) {
+                return JSON.parse(data);
+            }]
+        }).then(function successCallback(response) {
+            var data = response.data;
+            console.log(data);
+            return data[1][0][1];
+
+        }, function errorCallback(response) {
+            console.log('error');
+            $scope.html = JSON.stringify(response);
+        });
+
+        return promise;
+    }
 };
 
 

@@ -64,6 +64,7 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                 this.searchItems = [];
                 this.selectedItems = [];
                 this.searchQuery = undefined;
+                this.searchQueryIncrement = '';
 
                 this.isArray = function (array) {
                     return angular.isArray(array);
@@ -89,7 +90,7 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     '<button class="ion-autocomplete-cancel button button-clear" ng-click="viewModel.cancelClick()">{{viewModel.cancelLabel}}</button>',
                     '</div>',
                     '<ion-content class="has-header">',
-                    '<ion-item class="item-divider">{{viewModel.selectedItemsLabel}}</ion-item>',
+                    '',
                     '<ion-item ng-if="viewModel.isArray(viewModel.selectedItems)" ng-repeat="selectedItem in viewModel.selectedItems track by $index" class="item-icon-left item-icon-right item-text-wrap">',
                     '<i class="icon ion-checkmark"></i>',
                     '{{viewModel.getItemValue(selectedItem, viewModel.itemViewValueKey)}}',
@@ -100,7 +101,7 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     '{{viewModel.getItemValue(viewModel.selectedItems, viewModel.itemViewValueKey)}}',
                     '<i class="icon ion-trash-a" style="cursor:pointer" ng-click="viewModel.removeItem(0)"></i>',
                     '</ion-item>',
-                    '<ion-item class="item-divider" ng-if="viewModel.searchItems.length > 0">{{viewModel.selectItemsLabel}}</ion-item>',
+                    '',
                     '<ion-item ng-repeat="item in viewModel.searchItems" item-height="55px" item-width="100%" ng-click="viewModel.selectItem(item)" class="item-text-wrap">',
                     '{{viewModel.getItemValue(item, viewModel.itemViewValueKey)}}',
                     '</ion-item>',
@@ -152,8 +153,12 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     ionAutocompleteController.selectItem = function (item) {
 
                         // clear the search query when an item is selected
-                        ionAutocompleteController.searchQuery = undefined;
-
+                        var searchQuery = ionAutocompleteController.searchQuery;
+                        var newSearchQuery = searchQuery.replace(ionAutocompleteController.searchQueryIncrement, item);
+                        ionAutocompleteController.searchQuery = newSearchQuery;
+                        ionAutocompleteController.searchQueryIncrement = '';
+                        searchInputElement.focus();
+                        return;
                         // return if the max selected items is not equal to 1 and the maximum amount of selected items is reached
                         if (ionAutocompleteController.maxSelectedItems != "1" &&
                             angular.isArray(ionAutocompleteController.selectedItems) &&
@@ -162,26 +167,26 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                         }
 
                         // store the selected items
-                        if (!isKeyValueInObjectArray(ionAutocompleteController.selectedItems,
-                                ionAutocompleteController.itemValueKey, ionAutocompleteController.getItemValue(item, ionAutocompleteController.itemValueKey))) {
-
-                            // if it is a single select set the item directly
-                            if (ionAutocompleteController.maxSelectedItems == "1") {
-                                ionAutocompleteController.selectedItems = item;
-                            } else {
-                                // create a new array to update the model. See https://github.com/angular-ui/ui-select/issues/191#issuecomment-55471732
-                                ionAutocompleteController.selectedItems = ionAutocompleteController.selectedItems.concat([item]);
-                            }
-                        }
+                        // if (!isKeyValueInObjectArray(ionAutocompleteController.selectedItems,
+                        //         ionAutocompleteController.itemValueKey, ionAutocompleteController.getItemValue(item, ionAutocompleteController.itemValueKey))) {
+                        //
+                        //     // if it is a single select set the item directly
+                        //     if (ionAutocompleteController.maxSelectedItems == "1") {
+                        //         ionAutocompleteController.selectedItems = item;
+                        //     } else {
+                        //         // create a new array to update the model. See https://github.com/angular-ui/ui-select/issues/191#issuecomment-55471732
+                        //         ionAutocompleteController.selectedItems = ionAutocompleteController.selectedItems.concat([item]);
+                        //     }
+                        // }
 
                         // set the view value and render it
                         ngModelController.$setViewValue(ionAutocompleteController.selectedItems);
                         ngModelController.$render();
 
                         // hide the container and the ionic backdrop if it is a single select to enhance usability
-                        if (ionAutocompleteController.maxSelectedItems == 1) {
-                            ionAutocompleteController.hideModal();
-                        }
+                        // if (ionAutocompleteController.maxSelectedItems == 1) {
+                        //     ionAutocompleteController.hideModal();
+                        // }
 
                         // call items clicked callback
                         if (angular.isDefined(attrs.itemsClickedMethod)) {
@@ -225,8 +230,16 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     };
 
                     // watcher on the search field model to update the list according to the input
-                    scope.$watch('viewModel.searchQuery', function (query) {
-                        ionAutocompleteController.fetchSearchQuery(query, false);
+                    scope.$watch('viewModel.searchQuery', function (query, oldQuery) {
+                        if (!oldQuery) {
+                            ionAutocompleteController.searchQueryIncrement = query;
+                        } else {
+                            var cleanup = function(query) {
+                                return query.replace(/[^a-zA-Z]+/g, '');
+                            };
+                            ionAutocompleteController.searchQueryIncrement = cleanup(query);
+                        }
+                        ionAutocompleteController.fetchSearchQuery(ionAutocompleteController.searchQueryIncrement, false);
                     });
 
                     // update the search items based on the returned value of the items-method
@@ -293,7 +306,7 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                         }
 
                         // show the backdrop and the search container
-                        $ionicBackdrop.retain();
+                        // $ionicBackdrop.retain();
                         angular.element($document[0].querySelector('div.ion-autocomplete-container.' + ionAutocompleteController.randomCssClass)).css('display', 'block');
 
                         // hide the container if the back button is pressed
@@ -410,6 +423,8 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     // cancel handler for the cancel button which clears the search input field model and hides the
                     // search container and the ionic backdrop and calls the cancel button clicked callback
                     ionAutocompleteController.cancelClick = function () {
+                        ngModelController.$setViewValue(ionAutocompleteController.searchQuery);
+                        ngModelController.$render();
                         ionAutocompleteController.hideModal();
 
                         // call cancel button clicked callback

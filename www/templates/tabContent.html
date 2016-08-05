@@ -3,7 +3,15 @@
         <form id="googleTranslate-form1" class="list ">
 
             <label class="item item-input " id="googleTranslate-input1">
-                <input type="text" placeholder="Tap to enter text" ng-model="input.q">
+                <input
+                    ion-autocomplete type="text"
+                    placeholder="Tap to enter text"
+                    class="ion-autocomplete"
+                    autocomplete="off"
+                    max-selected-items="1"
+                    ng-model="input.q"
+                    items-method="callbackMethod(query)"
+                />
             </label>
 
             <button id="googleTranslate-button1" class=" button button-positive  button-block "
