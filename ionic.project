@@ -1,10 +1,10 @@
 {
   "name": "thaienglishaggregator",
-  "app_id": "",
-    "proxies": [
-      {
-        "path": "/google",
-        "proxyUrl": "https://translate.google.com/translate_a/single?client=t&sl=th&tl=en&hl=en&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&otf=1&trs=1&inputm=1&srcrom=1&ssel=4&tsel=0&kc=2&tk=104764.500336&q=%E0%B9%83%E0%B8%88"
-      }
-    ]
+  "app_id": "621aa2f3",
+  "proxies": [
+    {
+      "path": "/ajax/AddNewQueryDoSpacing.aspx",
+      "proxyUrl": "http://www.thai2english.com/ajax/AddNewQueryDoSpacing.aspx"
+    }
+  ]
 }

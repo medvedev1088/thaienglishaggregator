@@ -7,24 +7,24 @@ angular.module('app.routes', [])
   // Set up the various states which the app can be in.
   // Each state's controller can be found in controllers.js
   $stateProvider
-    
-  
+
+
 
       .state('tabsController.googleTranslate', {
-    url: '/page2',
+    url: '/page2?tab',
     views: {
       'tab1': {
-        templateUrl: 'templates/googleTranslate.html',
+        templateUrl: 'templates/tabContent.html',
         controller: 'googleTranslateCtrl'
       }
     }
   })
 
   .state('tabsController.cartTabDefaultPage', {
-    url: '/page3',
+    url: '/page3?tab',
     views: {
       'tab2': {
-        templateUrl: 'templates/cartTabDefaultPage.html',
+        templateUrl: 'templates/tabContent.html',
         controller: 'cartTabDefaultPageCtrl'
       }
     }
@@ -46,8 +46,8 @@ angular.module('app.routes', [])
     abstract:true
   })
 
-$urlRouterProvider.otherwise('/page1/page2')
+$urlRouterProvider.otherwise('/page1/page3?tab=thai2english')
 
-  
+
 
 });

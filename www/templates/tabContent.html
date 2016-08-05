@@ -1,0 +1,32 @@
+<ion-view title="Google Translate" id="page2" class=" ">
+    <ion-content padding="true" class="has-header">
+        <form id="googleTranslate-form1" class="list ">
+
+            <label class="item item-input " id="googleTranslate-input1">
+                <input type="text" placeholder="Tap to enter text" ng-model="input.q">
+            </label>
+
+            <button id="googleTranslate-button1" class=" button button-positive  button-block "
+                    ng-click="updateHtml()">Translate
+            </button>
+        </form>
+        <div>
+            <p>{{translation.t}}</p>
+            <p>{{translation.tr}}</p>
+            <p>
+            <ul>
+                <li ng-repeat="dictionaryEntry in translation.dictionary">
+                    {{dictionaryEntry.meaning}}:
+                    <span ng-repeat="synonym in dictionaryEntry.synonyms">
+                        {{synonym}}{{!$last ? ',' : ''}}
+                    </span>
+                </li>
+            </ul>
+            <ul>
+                <li ng-repeat="word in translation.words">
+                    {{word.text}} : {{word.tr}} : {{word.meaning}}
+                </li>
+            </ul>
+        </div>
+    </ion-content>
+</ion-view>
