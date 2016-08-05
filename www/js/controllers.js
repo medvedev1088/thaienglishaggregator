@@ -1,11 +1,11 @@
 var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicPopup, Thai2englishUrl) {
-    var $ = window.jQuery;
+    var $ = angular.element;
     console.log($stateParams);
     $scope.input = {
         q: 'อาหารไทยมีชื่อเสียงทั่วโลก'
     };
     $scope.translation = {
-        t: '456',
+        t: '',
         tr: '',
         dictionary: [],
         sp: '',
@@ -58,11 +58,13 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
     function convertThai2EnglishToTranslation(data) {
         data = JSON.parse(data);
         console.log(data);
-        //var Query = $(data.Query);
-        //var transcription = $.makeArray(Query.find('li.listTlitLine > span')).map(function(e) {return e.innerText}).join(' ');
-        //console.log('Transcription', transcription);
-        // translation.tr = transcription;
 
+        var translation = {};
+
+        var Query = $(data.Query);
+        var transcription = $.makeArray(Query.find('li.listTlitLine > span')).map(function(e) {return e.innerText}).join(' ');
+        console.log('Transcription', transcription);
+        translation.tr = transcription;
 
         var Sentences = data.Sentences;
         var Sentence = Sentences[0];
@@ -76,7 +78,7 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
                 meaning: WordObject.Meanings[0].Meaning
             })
         }
-        var translation = {};
+
         translation.words = words;
 
         return translation;
@@ -152,11 +154,18 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
             if ($stateParams.tab === 'google') {
                 translation = convertGoogleToTranslation(responseData);
             } else if ($stateParams.tab === 'thai2english') {
-                translation = convertThai2EnglishToTranslation(responseData);
+                try {
+                    translation = convertThai2EnglishToTranslation(responseData);
+                } catch (err) {
+                $ionicPopup.alert({
+                    title: err,
+                    template: 'test'
+                });
+                }
             }
 
             $scope.translation = {
-                t: '123'
+                t: ''
             };
 
             copyProperties(translation, $scope.translation);
