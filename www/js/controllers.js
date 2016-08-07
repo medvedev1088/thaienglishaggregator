@@ -1,3 +1,26 @@
+function Optional(value) {
+    this.value = value;
+    this.hasValue = !!value;
+}
+
+Optional.prototype.forEach = function(func) {
+    if (this.hasValue && this.value.length) {
+        for (var i = 0; i < this.value.length; i++) {
+            func(new Optional(this.value[i]));
+        }
+    }
+};
+
+Optional.prototype.get = function(index) {
+    return this.hasValue && this.value.length && this.value.length > index
+        ? new Optional(this.value[index])
+        : new Optional(null);
+};
+
+Optional.prototype.orElse = function(value) {
+    return this.hasValue ? this.value : value;
+};
+
 var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicPopup, Thai2englishUrl) {
     var $ = angular.element;
     console.log($stateParams);
@@ -19,39 +42,23 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
     function convertGoogleToTranslation(data) {
         data = eval(data);
         var translation = {};
-        if (data.length > 0) {
-            var translationWithTranscription = data[0];
-            if (translationWithTranscription.length > 0) {
-                var tArray = translationWithTranscription[0];
-                if (tArray.length > 0) {
-                    translation.t = tArray[0];
-                }
-            }
-            if (translationWithTranscription.length > 1) {
-                var trArray = translationWithTranscription[1];
-                if (trArray.length > 3) {
-                    translation.tr = trArray[3];
-                }
-            }
-        }
-        if (data.length > 1 && data[1] && data[1].length > 0) {
-            var dictionaryArray = data[1][0];
-            var sentencePart = dictionaryArray[0];
-            translation.sp = sentencePart;
 
-            var dictionary = [];
-            var dictionaryMapArray = dictionaryArray[2];
-            for (var i = 0; i < dictionaryMapArray.length; i++) {
-                var dictEntry = dictionaryMapArray[i];
-                var meaning = dictEntry[0];
-                var synonyms = dictEntry[1];
-                dictionary.push({
-                    meaning: meaning,
-                    synonyms: synonyms
-                })
-            }
-            translation.dictionary = dictionary;
-        }
+        translation.t = new Optional(data).get(0).get(0).get(0).orElse('');
+        translation.tr = new Optional(data).get(0).get(1).get(3).orElse('');
+
+        translation.sp = new Optional(data).get(1).get(0).get(0).orElse('');
+
+        var dictionary = [];
+        new Optional(data).get(1).get(0).get(2).forEach(function(dictEntry) {
+            var meaning = dictEntry.get(0).orElse('');
+            var synonyms = dictEntry.get(1).orElse('');
+            dictionary.push({
+                meaning: meaning,
+                synonyms: synonyms
+            })
+        });
+        translation.dictionary = dictionary;
+
         return translation;
     }
 
@@ -186,6 +193,10 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
     $scope.callbackMethod = function (query, isInitializing) {
         var q = query;
 
+        if (!q || (q.length && q.length == 0)) {
+            return [];
+        }
+
         var promise = $http({
             method: 'GET',
             url: 'https://inputtools.google.com/request',
@@ -205,8 +216,7 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
         }).then(function successCallback(response) {
             var data = response.data;
             console.log(data);
-            return data[1][0][1];
-
+            return new Optional(data).get(1).get(0).get(1).orElse([]);
         }, function errorCallback(response) {
             console.log('error');
             $scope.html = JSON.stringify(response);

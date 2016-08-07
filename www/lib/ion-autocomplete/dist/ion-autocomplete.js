@@ -234,7 +234,7 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                             ionAutocompleteController.searchQueryIncrement = query;
                         } else {
                             var cleanup = function(query) {
-                                return query.replace(/[^a-zA-Z]+/g, '');
+                                return query ? query.replace(/[^a-zA-Z]+/g, '') : '';
                             };
                             ionAutocompleteController.searchQueryIncrement = cleanup(query);
                         }
