@@ -65,6 +65,11 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                 this.selectedItems = [];
                 this.searchQuery = undefined;
                 this.searchQueryIncrement = '';
+                this.searchSelection = {
+                    start: 0,
+                    end: 0
+                };
+
 
                 this.isArray = function (array) {
                     return angular.isArray(array);
@@ -84,7 +89,7 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     '<div class="bar bar-header item-input-inset">',
                     '<label class="item-input-wrapper">',
                     '<i class="icon ion-search placeholder-icon"></i>',
-                    '<input type="search" class="ion-autocomplete-search" ng-model="viewModel.searchQuery" ng-model-options="viewModel.ngModelOptions" placeholder="Enter text"/>',
+                    '<input type="search" class="ion-autocomplete-search" ng-model="viewModel.searchQuery" ng-model-options="viewModel.ngModelOptions" placeholder="Enter text" autocomplete="off" autocorrect="off" autocapitalize="off"/>',
                     '</label>',
                     '<div class="ion-autocomplete-loading-icon" ng-if="viewModel.showLoadingIcon && viewModel.loadingIcon"><ion-spinner icon="{{viewModel.loadingIcon}}"></ion-spinner></div>',
                     '<button class="ion-autocomplete-cancel button button-clear" ng-click="viewModel.cancelClick()">{{viewModel.cancelLabel}}</button>',
@@ -149,15 +154,28 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                         return item;
                     };
 
+                    var replaceSubstring = function(str, start, end, replacement) {
+                        var prefix = str.substr(0, start);
+                        var suffix = str.substr(end);
+                        console.log('Prefix suffix', prefix, suffix);
+                        return prefix + replacement + suffix;
+                    };
+
                     // function which selects the item, hides the search container and the ionic backdrop if it has not maximum selected items attribute set
                     ionAutocompleteController.selectItem = function (item) {
 
                         // clear the search query when an item is selected
                         var searchQuery = ionAutocompleteController.searchQuery;
-                        var newSearchQuery = searchQuery.replace(ionAutocompleteController.searchQueryIncrement, item);
+                        var searchSelection = ionAutocompleteController.searchSelection;
+
+                        var newSearchQuery = replaceSubstring(searchQuery, searchSelection.start, searchSelection.end, item);
+
                         ionAutocompleteController.searchQuery = newSearchQuery;
-                        ionAutocompleteController.searchQueryIncrement = '';
+                        searchInputElement[0].value = newSearchQuery;
+                        ionAutocompleteController.searchQuerySelection = updateSearchSelection(true);
                         return;
+                        // on click
+
                         // return if the max selected items is not equal to 1 and the maximum amount of selected items is reached
                         if (ionAutocompleteController.maxSelectedItems != "1" &&
                             angular.isArray(ionAutocompleteController.selectedItems) &&
@@ -228,17 +246,88 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                         }
                     };
 
-                    // watcher on the search field model to update the list according to the input
-                    scope.$watch('viewModel.searchQuery', function (query, oldQuery) {
-                        if (!oldQuery) {
-                            ionAutocompleteController.searchQueryIncrement = query;
-                        } else {
-                            var cleanup = function(query) {
-                                return query ? query.replace(/[^a-zA-Z]+/g, '') : '';
-                            };
-                            ionAutocompleteController.searchQueryIncrement = cleanup(query);
+                    function doGetCaretPosition (oField) {
+                        var iCaretPos = 0;
+
+                        if (oField.selectionStart || oField.selectionStart == '0') {
+                            iCaretPos = oField.selectionStart;
                         }
-                        ionAutocompleteController.fetchSearchQuery(ionAutocompleteController.searchQueryIncrement, false);
+
+                        return iCaretPos;
+                    }
+
+                    // selection
+                    var updateSearchSelection = function(empty) {
+                        var newCaretPosition = doGetCaretPosition(searchInputElement[0]);
+                        console.log('Caret', newCaretPosition);
+                        var searchSelection = ionAutocompleteController.searchSelection;
+
+                        var oldStart = searchSelection.start;
+                        var oldEnd = searchSelection.end;
+
+                        if (typeof(empty) === "boolean" && empty) {
+                            searchSelection = {
+                                start: newCaretPosition,
+                                end: newCaretPosition
+                            };
+                        } else if (newCaretPosition <= oldStart) {
+                            searchSelection = {
+                                start: newCaretPosition,
+                                end: newCaretPosition
+                            };
+                        } else if ((newCaretPosition - oldStart) > 20) {
+                            searchSelection = {
+                                start: newCaretPosition,
+                                end: newCaretPosition
+                            };
+                        } else {
+                            searchSelection = {
+                                start: oldStart,
+                                end: newCaretPosition
+                            }
+                        }
+
+                        ionAutocompleteController.searchSelection = searchSelection;
+                        console.log('Search selection', searchSelection.start, searchSelection.end);
+
+                        var searchSelection = ionAutocompleteController.searchSelection;
+
+                        var searchSelectionString = '';
+                        do {
+                            if (searchSelection.start == searchSelection.end) {
+                                searchSelectionString = '';
+                            } else {
+                                searchSelectionString = ionAutocompleteController.searchQuery.substring(
+                                    searchSelection.start, searchSelection.end
+                                )
+                            }
+                            if (searchSelectionString.startsWith(' ')) {
+                                searchSelection.start++;
+                            }
+                        } while(searchSelectionString.startsWith(' '));
+
+                        console.log('Search selection string', searchSelectionString);
+
+                        ionAutocompleteController.fetchSearchQuery(searchSelectionString, false);
+                    };
+                    var searchInputElement = angular.element($document[0].querySelector('div.ion-autocomplete-container.' + ionAutocompleteController.randomCssClass + ' input'));
+                    searchInputElement.bind('keyup touchend mouseup focus', updateSearchSelection);
+
+
+                    // watcher on the search field model to update the list according to the input
+                    scope.$watch('viewModel.searchQuery', function (query) {
+                        // var searchSelection = ionAutocompleteController.searchSelection;
+                        // var searchSelectionString = '';
+                        // if (searchSelection.start == searchSelection.end) {
+                        //     searchSelectionString = '';
+                        // } else {
+                        //     searchSelectionString = ionAutocompleteController.searchQuery.substring(
+                        //         searchSelection.start, searchSelection.end
+                        //     )
+                        // }
+                        // console.log('Search selection string', searchSelectionString);
+                        //
+                        // ionAutocompleteController.fetchSearchQuery(searchSelectionString, false);
                     });
 
                     // update the search items based on the returned value of the items-method
@@ -254,12 +343,13 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                             // show the loading icon
                             ionAutocompleteController.showLoadingIcon = true;
 
-                            var queryObject = {query: query, isInitializing: isInitializing};
+                            var queryObject = {query: query, type: 'unknown', isInitializing: isInitializing};
 
                             // if the component id is set, then add it to the query object
                             if (ionAutocompleteController.componentId) {
                                 queryObject = {
                                     query: query,
+                                    type: 'unknown',
                                     isInitializing: isInitializing,
                                     componentId: ionAutocompleteController.componentId
                                 }

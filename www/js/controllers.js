@@ -21,7 +21,7 @@ Optional.prototype.orElse = function(value) {
     return this.hasValue ? this.value : value;
 };
 
-var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicPopup, Thai2englishUrl) {
+var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicPopup, Thai2englishUrl, GoogleCompleteSearchUrl) {
     var $ = angular.element;
     console.log($stateParams);
     $scope.input = {
@@ -190,37 +190,97 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
         });
     };
 
-    $scope.callbackMethod = function (query, isInitializing) {
+    $scope.callbackMethod = function (query, type) {
         var q = query;
 
         if (!q || (q.length && q.length == 0)) {
             return [];
         }
 
-        var promise = $http({
-            method: 'GET',
-            url: 'https://inputtools.google.com/request',
-            params: {
-                text: q,
-                itc: 'th-t-i0-und',
-                num: '13',
-                cp: '0',
-                cs: '1',
-                ie: 'utf-8',
-                oe: 'utf-8',
-                app: 'translate'
-            },
-            transformResponse: [function (data) {
-                return JSON.parse(data);
-            }]
-        }).then(function successCallback(response) {
-            var data = response.data;
-            console.log(data);
-            return new Optional(data).get(1).get(0).get(1).orElse([]);
-        }, function errorCallback(response) {
-            console.log('error');
-            $scope.html = JSON.stringify(response);
-        });
+        var promise;
+        console.log('Type', type);
+        if (type == 'unknown') {
+            var karaokePromise = $http({
+                method: 'GET',
+                url: 'https://inputtools.google.com/request',
+                params: {
+                    text: q,
+                    itc: 'th-t-i0-und',
+                    num: '13',
+                    cp: '0',
+                    cs: '1',
+                    ie: 'utf-8',
+                    oe: 'utf-8',
+                    app: 'translate'
+                },
+                transformResponse: [function (data) {
+                    return JSON.parse(data);
+                }]
+            }).then(function successCallback(response) {
+                var data = response.data;
+                console.log(data);
+                return new Optional(data).get(1).get(0).get(1).orElse([]);
+            }, function errorCallback(response) {
+                console.log('error');
+                $scope.html = JSON.stringify(response);
+            });
+
+            var suggestionsPromise = $http({
+                method: 'GET',
+                url: 'https://clients1.google.com/complete/search?client=translate_separate_corpus&ds=translate&hl=en&requiredfields=tl%3Ath',
+                params: {
+                    q: q
+                },
+                transformResponse: [function (data) {
+                    console.log('data g', data);
+                    var data = data.replace('window.google.ac.h(', '');
+                    data = data.substring(0, data.length - 1);
+                    console.log('data g trimmed', data);
+                    return JSON.parse(data);
+                }]
+            }).then(function successCallback(response) {
+                var data = response.data;
+                console.log(data);
+                var arr = new Optional(data).get(1).orElse([]).map(function(e) {return e[0]});
+                arr = arr.map(function(e) {return e.replace('<b>', '').replace('</b>', '')});
+                console.log('arr', arr);
+                return arr;
+            }, function errorCallback(response) {
+                console.log('error');
+                $scope.html = JSON.stringify(response);
+            });
+
+            return Promise.all([karaokePromise, suggestionsPromise]).then(function (resultArray) {
+
+                var suggestionsResult = resultArray[1];
+                console.log('suggestionsResult', suggestionsResult);
+                var karaokeResult = resultArray[0];
+                if (suggestionsResult && suggestionsResult.length > 0) {
+                    return [suggestionsResult[0]].concat(karaokeResult);
+                } else {
+                    return karaokeResult;
+                }
+            })
+        } else if (type == 'english' || type == 'thai') {
+            promise = $http({
+                method: 'GET',
+                url: 'http://suggestqueries.google.com/complete/search',
+                params: {
+                    client: 'firefox',
+                    q: q
+                },
+                transformResponse: [function (data) {
+                    return JSON.parse(data);
+                }]
+            }).then(function successCallback(response) {
+                var data = response.data;
+                console.log(data);
+                return new Optional(data).get(1).orElse([]);
+            }, function errorCallback(response) {
+                console.log('error');
+                $scope.html = JSON.stringify(response);
+            });
+        }
 
         return promise;
     }
@@ -229,9 +289,9 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
 
 angular.module('app.controllers', [])
 
-    .controller('googleTranslateCtrl', ['$scope', '$stateParams', '$http', '$window', '$ionicPopup', 'Thai2englishUrl', controllerFunction])
+    .controller('googleTranslateCtrl', ['$scope', '$stateParams', '$http', '$window', '$ionicPopup', 'Thai2englishUrl', 'Thai2englishUrl', controllerFunction])
 
-    .controller('cartTabDefaultPageCtrl', ['$scope', '$stateParams', '$http', '$window', '$ionicPopup', 'Thai2englishUrl', controllerFunction])
+    .controller('cartTabDefaultPageCtrl', ['$scope', '$stateParams', '$http', '$window', '$ionicPopup', 'Thai2englishUrl', 'Thai2englishUrl', controllerFunction])
 
     .controller('cloudTabDefaultPageCtrl', ['$scope', '$stateParams', // TIP: Access Route Parameters for your page via $stateParams.parameterName
         function ($scope, $stateParams) {

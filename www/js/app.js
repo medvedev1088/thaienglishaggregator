@@ -8,6 +8,7 @@
 var devEnvironment = localStorage.environment === 'dev';
 angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.directives','app.services', 'ion-autocomplete'])
 .constant('Thai2englishUrl', devEnvironment ? '': 'http://www.thai2english.com')
+.constant('GoogleCompleteSearchUrl', devEnvironment ? '': 'http://suggestqueries.google.com')
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
