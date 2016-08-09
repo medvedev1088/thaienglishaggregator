@@ -21,6 +21,12 @@ Optional.prototype.orElse = function(value) {
     return this.hasValue ? this.value : value;
 };
 
+function htmlDecode(input){
+    var e = document.createElement('div');
+    e.innerHTML = input;
+    return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+}
+
 var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicPopup, Thai2englishUrl, GoogleCompleteSearchUrl) {
     var $ = angular.element;
     console.log($stateParams);
@@ -242,7 +248,8 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
                 var data = response.data;
                 console.log(data);
                 var arr = new Optional(data).get(1).orElse([]).map(function(e) {return e[0]});
-                arr = arr.map(function(e) {return e.replace('<b>', '').replace('</b>', '')});
+                // arr = arr.map(function(e) {return e.replace('<b>', '').replace('</b>', '')});
+                arr = arr.map(function(e) {return htmlDecode(e)});
                 console.log('arr', arr);
                 return arr;
             }, function errorCallback(response) {

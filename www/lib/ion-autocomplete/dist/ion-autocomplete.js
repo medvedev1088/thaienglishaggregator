@@ -98,12 +98,10 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     '<ion-item ng-if="viewModel.isArray(viewModel.selectedItems)" ng-repeat="selectedItem in viewModel.selectedItems track by $index" class="item-icon-left item-icon-right item-text-wrap">',
                     '<i class="icon ion-checkmark"></i>',
                     '{{viewModel.getItemValue(selectedItem, viewModel.itemViewValueKey)}}',
-                    '<i class="icon ion-trash-a" style="cursor:pointer" ng-click="viewModel.removeItem($index)"></i>',
                     '</ion-item>',
                     '<ion-item ng-if="!viewModel.isArray(viewModel.selectedItems)" class="item-icon-left item-icon-right item-text-wrap">',
                     '<i class="icon ion-checkmark"></i>',
                     '{{viewModel.getItemValue(viewModel.selectedItems, viewModel.itemViewValueKey)}}',
-                    '<i class="icon ion-trash-a" style="cursor:pointer" ng-click="viewModel.removeItem(0)"></i>',
                     '</ion-item>',
                     '',
                     '<ion-item ng-repeat="item in viewModel.searchItems" item-height="55px" item-width="100%" ng-click="viewModel.selectItem(item)" class="item-text-wrap">',
@@ -172,59 +170,6 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                         ionAutocompleteController.searchQuery = newSearchQuery;
                         searchInputElement[0].value = newSearchQuery;
                         ionAutocompleteController.searchQuerySelection = updateSearchSelection(true);
-                        return;
-                        // on click
-
-                        // return if the max selected items is not equal to 1 and the maximum amount of selected items is reached
-                        if (ionAutocompleteController.maxSelectedItems != "1" &&
-                            angular.isArray(ionAutocompleteController.selectedItems) &&
-                            ionAutocompleteController.maxSelectedItems == ionAutocompleteController.selectedItems.length) {
-                            return;
-                        }
-
-                        // set the view value and render it
-                        ngModelController.$setViewValue(ionAutocompleteController.selectedItems);
-                        ngModelController.$render();
-
-                        // call items clicked callback
-                        if (angular.isDefined(attrs.itemsClickedMethod)) {
-                            ionAutocompleteController.itemsClickedMethod({
-                                callback: {
-                                    item: item,
-                                    selectedItems: angular.isArray(ionAutocompleteController.selectedItems) ? ionAutocompleteController.selectedItems.slice() : ionAutocompleteController.selectedItems,
-                                    componentId: ionAutocompleteController.componentId
-                                }
-                            });
-                        }
-                    };
-
-                    // function which removes the item from the selected items.
-                    ionAutocompleteController.removeItem = function (index) {
-
-                        // clear the selected items if just one item is selected
-                        if (!angular.isArray(ionAutocompleteController.selectedItems)) {
-                            ionAutocompleteController.selectedItems = [];
-                        } else {
-                            // remove the item from the selected items and create a copy of the array to update the model.
-                            // See https://github.com/angular-ui/ui-select/issues/191#issuecomment-55471732
-                            var removed = ionAutocompleteController.selectedItems.splice(index, 1)[0];
-                            ionAutocompleteController.selectedItems = ionAutocompleteController.selectedItems.slice();
-                        }
-
-                        // set the view value and render it
-                        ngModelController.$setViewValue(ionAutocompleteController.selectedItems);
-                        ngModelController.$render();
-
-                        // call items clicked callback
-                        if (angular.isDefined(attrs.itemsRemovedMethod)) {
-                            ionAutocompleteController.itemsRemovedMethod({
-                                callback: {
-                                    item: removed,
-                                    selectedItems: angular.isArray(ionAutocompleteController.selectedItems) ? ionAutocompleteController.selectedItems.slice() : ionAutocompleteController.selectedItems,
-                                    componentId: ionAutocompleteController.componentId
-                                }
-                            });
-                        }
                     };
 
                     function doGetCaretPosition (oField) {
@@ -442,17 +387,6 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
 
                         // show the ionic backdrop and the search container
                         ionAutocompleteController.showModal();
-                    };
-
-                    var isKeyValueInObjectArray = function (objectArray, key, value) {
-                        if (angular.isArray(objectArray)) {
-                            for (var i = 0; i < objectArray.length; i++) {
-                                if (ionAutocompleteController.getItemValue(objectArray[i], key) === value) {
-                                    return true;
-                                }
-                            }
-                        }
-                        return false;
                     };
 
                     // function to call the model to item method and select the item
