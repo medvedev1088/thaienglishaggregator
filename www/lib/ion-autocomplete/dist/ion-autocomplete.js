@@ -164,7 +164,10 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
 
                         ionAutocompleteController.searchQuery = newSearchQuery;
                         searchInputElement[0].value = newSearchQuery;
-                        ionAutocompleteController.searchQuerySelection = updateSearchSelection(true);
+                        setTimeout(function () {
+                            ionAutocompleteController.searchQuerySelection = updateSearchSelection(true);
+                        }, 0);
+
                     };
 
                     function doGetCaretPosition (oField) {
@@ -175,6 +178,13 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                         }
 
                         return iCaretPos;
+                    }
+
+                    function isEnglish(str) {
+                        if (/[a-z]/i.test(str) && str.indexOf(' ') >= 0) {
+                            return true;
+                        }
+                        return false;
                     }
 
                     // selection
@@ -209,8 +219,6 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
 
                         ionAutocompleteController.searchSelection = searchSelection;
 
-                        var searchSelection = ionAutocompleteController.searchSelection;
-
                         var searchSelectionString = '';
                         do {
                             if (searchSelection.start == searchSelection.end) {
@@ -226,6 +234,12 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                         } while(searchSelectionString.startsWith(' '));
 
                         console.log('Search selection string', searchSelectionString);
+
+                        if (ionAutocompleteController.language == 'unknown' && isEnglish(searchSelectionString)) {
+                            ionAutocompleteController.language = 'english';
+                        } else if (searchSelection.start == 0 && searchSelection.end == 0) {
+                            ionAutocompleteController.language = 'unknown';
+                        }
 
                         ionAutocompleteController.fetchSearchQuery(searchSelectionString, false);
                     };
