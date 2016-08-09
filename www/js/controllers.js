@@ -29,7 +29,6 @@ function htmlDecode(input){
 
 var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicPopup, Thai2englishUrl, GoogleCompleteSearchUrl) {
     var $ = angular.element;
-    console.log($stateParams);
     $scope.input = {
         q: 'อาหารไทยมีชื่อเสียงทั่วโลก'
     };
@@ -76,7 +75,6 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
 
         var Query = $(data.Query);
         var transcription = $.makeArray(Query.find('li.listTlitLine > span')).map(function(e) {return e.innerText}).join(' ');
-        console.log('Transcription', transcription);
         translation.tr = transcription;
 
         var Sentences = data.Sentences;
@@ -196,7 +194,11 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
         });
     };
 
-    $scope.callbackMethod = function (query, type) {
+    $scope.search = function (callback) {
+        $scope.updateHtml();
+    };
+
+    $scope.callbackMethod = function (query, language) {
         var q = query;
 
         if (!q || (q.length && q.length == 0)) {
@@ -204,8 +206,8 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
         }
 
         var promise;
-        console.log('Type', type);
-        if (type == 'unknown') {
+        console.log('Language', language);
+        if (language == 'unknown') {
             var karaokePromise = $http({
                 method: 'GET',
                 url: 'https://inputtools.google.com/request',
@@ -238,10 +240,8 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
                     q: q
                 },
                 transformResponse: [function (data) {
-                    console.log('data g', data);
                     var data = data.replace('window.google.ac.h(', '');
                     data = data.substring(0, data.length - 1);
-                    console.log('data g trimmed', data);
                     return JSON.parse(data);
                 }]
             }).then(function successCallback(response) {
@@ -250,7 +250,6 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
                 var arr = new Optional(data).get(1).orElse([]).map(function(e) {return e[0]});
                 // arr = arr.map(function(e) {return e.replace('<b>', '').replace('</b>', '')});
                 arr = arr.map(function(e) {return htmlDecode(e)});
-                console.log('arr', arr);
                 return arr;
             }, function errorCallback(response) {
                 console.log('error');
@@ -260,7 +259,6 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
             return Promise.all([karaokePromise, suggestionsPromise]).then(function (resultArray) {
 
                 var suggestionsResult = resultArray[1];
-                console.log('suggestionsResult', suggestionsResult);
                 var karaokeResult = resultArray[0];
                 if (suggestionsResult && suggestionsResult.length > 0) {
                     return [suggestionsResult[0]].concat(karaokeResult);
@@ -268,7 +266,7 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
                     return karaokeResult;
                 }
             })
-        } else if (type == 'english' || type == 'thai') {
+        } else if (language == 'english' || language == 'thai') {
             promise = $http({
                 method: 'GET',
                 url: 'http://suggestqueries.google.com/complete/search',
@@ -281,7 +279,6 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
                 }]
             }).then(function successCallback(response) {
                 var data = response.data;
-                console.log(data);
                 return new Optional(data).get(1).orElse([]);
             }, function errorCallback(response) {
                 console.log('error');

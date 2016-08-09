@@ -25,9 +25,7 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                 modelToItemMethod: '&',
                 cancelButtonClickedMethod: '&',
                 placeholder: '@',
-                cancelLabel: '@',
-                selectItemsLabel: '@',
-                selectedItemsLabel: '@'
+                cancelLabel: '@'
             },
             controllerAs: 'viewModel',
             controller: ['$attrs', '$timeout', '$scope', function ($attrs, $timeout, $scope) {
@@ -42,12 +40,9 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                 $timeout(function () {
                     controller.placeholder = valueOrDefault(controller.placeholder, 'Click to enter a value...');
                     controller.cancelLabel = valueOrDefault(controller.cancelLabel, 'Done');
-                    controller.selectItemsLabel = valueOrDefault(controller.selectItemsLabel, "Select an item...");
-                    controller.selectedItemsLabel = valueOrDefault(controller.selectedItemsLabel, $interpolate("Selected items{{maxSelectedItems ? ' (max. ' + maxSelectedItems + ')' : ''}}:")(controller));
                 });
 
                 // set the default values of the passed in attributes
-                this.maxSelectedItems = valueOrDefault($attrs.maxSelectedItems, undefined);
                 this.templateUrl = valueOrDefault($attrs.templateUrl, undefined);
                 this.itemsMethodValueKey = valueOrDefault($attrs.itemsMethodValueKey, undefined);
                 this.itemValueKey = valueOrDefault($attrs.itemValueKey, undefined);
@@ -68,7 +63,7 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     start: 0,
                     end: 0
                 };
-
+                this.language = 'unknown';
 
                 this.isArray = function (array) {
                     return angular.isArray(array);
@@ -88,7 +83,7 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     '<div class="bar bar-header item-input-inset">',
                     '<label class="item-input-wrapper">',
                     '<i class="icon ion-search placeholder-icon"></i>',
-                    '<input type="search" class="ion-autocomplete-search" ng-model="viewModel.searchQuery" ng-model-options="viewModel.ngModelOptions" placeholder="Enter text" autocomplete="off" autocorrect="off" autocapitalize="off"/>',
+                    '<input type="search" class="ion-autocomplete-search" ng-model="viewModel.searchQuery" ng-model-options="viewModel.ngModelOptions" placeholder="English or ภาษาไทย" autocomplete="off" autocorrect="off" autocapitalize="off"/>',
                     '</label>',
                     '<div class="ion-autocomplete-loading-icon" ng-if="viewModel.showLoadingIcon && viewModel.loadingIcon"><ion-spinner icon="{{viewModel.loadingIcon}}"></ion-spinner></div>',
                     '<button class="ion-autocomplete-cancel button button-clear" ng-click="viewModel.cancelClick()">{{viewModel.cancelLabel}}</button>',
@@ -185,7 +180,6 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     // selection
                     var updateSearchSelection = function(empty) {
                         var newCaretPosition = doGetCaretPosition(searchInputElement[0]);
-                        console.log('Caret', newCaretPosition);
                         var searchSelection = ionAutocompleteController.searchSelection;
 
                         var oldStart = searchSelection.start;
@@ -214,7 +208,6 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                         }
 
                         ionAutocompleteController.searchSelection = searchSelection;
-                        console.log('Search selection', searchSelection.start, searchSelection.end);
 
                         var searchSelection = ionAutocompleteController.searchSelection;
 
@@ -252,13 +245,13 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                             // show the loading icon
                             ionAutocompleteController.showLoadingIcon = true;
 
-                            var queryObject = {query: query, type: 'unknown', isInitializing: isInitializing};
+                            var queryObject = {query: query, language: ionAutocompleteController.language, isInitializing: isInitializing};
 
                             // if the component id is set, then add it to the query object
                             if (ionAutocompleteController.componentId) {
                                 queryObject = {
                                     query: query,
-                                    type: 'unknown',
+                                    language: ionAutocompleteController.language,
                                     isInitializing: isInitializing,
                                     componentId: ionAutocompleteController.componentId
                                 }

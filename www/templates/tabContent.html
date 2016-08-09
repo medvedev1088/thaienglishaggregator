@@ -12,13 +12,10 @@
                     autocapitalize="off"
                     max-selected-items="1"
                     ng-model="input.q"
-                    items-method="callbackMethod(query, type)"
+                    items-method="callbackMethod(query, language)"
+                    cancel-button-clicked-method="search(callback)"
                 />
             </label>
-
-            <button id="googleTranslate-button1" class=" button button-positive  button-block "
-                    ng-click="updateHtml()">Translate
-            </button>
         </form>
         <div>
             <p>{{translation.t}}</p>
