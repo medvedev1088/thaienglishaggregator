@@ -64,7 +64,6 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                 this.searchItems = [];
                 this.selectedItems = [];
                 this.searchQuery = undefined;
-                this.searchQueryIncrement = '';
                 this.searchSelection = {
                     start: 0,
                     end: 0
@@ -183,27 +182,9 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                             return;
                         }
 
-                        // store the selected items
-                        // if (!isKeyValueInObjectArray(ionAutocompleteController.selectedItems,
-                        //         ionAutocompleteController.itemValueKey, ionAutocompleteController.getItemValue(item, ionAutocompleteController.itemValueKey))) {
-                        //
-                        //     // if it is a single select set the item directly
-                        //     if (ionAutocompleteController.maxSelectedItems == "1") {
-                        //         ionAutocompleteController.selectedItems = item;
-                        //     } else {
-                        //         // create a new array to update the model. See https://github.com/angular-ui/ui-select/issues/191#issuecomment-55471732
-                        //         ionAutocompleteController.selectedItems = ionAutocompleteController.selectedItems.concat([item]);
-                        //     }
-                        // }
-
                         // set the view value and render it
                         ngModelController.$setViewValue(ionAutocompleteController.selectedItems);
                         ngModelController.$render();
-
-                        // hide the container and the ionic backdrop if it is a single select to enhance usability
-                        // if (ionAutocompleteController.maxSelectedItems == 1) {
-                        //     ionAutocompleteController.hideModal();
-                        // }
 
                         // call items clicked callback
                         if (angular.isDefined(attrs.itemsClickedMethod)) {
@@ -312,23 +293,6 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     };
                     var searchInputElement = angular.element($document[0].querySelector('div.ion-autocomplete-container.' + ionAutocompleteController.randomCssClass + ' input'));
                     searchInputElement.bind('keyup touchend mouseup focus', updateSearchSelection);
-
-
-                    // watcher on the search field model to update the list according to the input
-                    scope.$watch('viewModel.searchQuery', function (query) {
-                        // var searchSelection = ionAutocompleteController.searchSelection;
-                        // var searchSelectionString = '';
-                        // if (searchSelection.start == searchSelection.end) {
-                        //     searchSelectionString = '';
-                        // } else {
-                        //     searchSelectionString = ionAutocompleteController.searchQuery.substring(
-                        //         searchSelection.start, searchSelection.end
-                        //     )
-                        // }
-                        // console.log('Search selection string', searchSelectionString);
-                        //
-                        // ionAutocompleteController.fetchSearchQuery(searchSelectionString, false);
-                    });
 
                     // update the search items based on the returned value of the items-method
                     ionAutocompleteController.fetchSearchQuery = function (query, isInitializing) {
