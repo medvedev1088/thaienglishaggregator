@@ -17,7 +17,6 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
             scope: {},
             bindToController: {
                 ngModel: '=',
-                externalModel: '=',
                 templateData: '=',
                 itemsMethod: '&',
                 itemsClickedMethod: '&',
@@ -43,7 +42,6 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                 });
 
                 // set the default values of the passed in attributes
-                this.templateUrl = valueOrDefault($attrs.templateUrl, undefined);
                 this.itemsMethodValueKey = valueOrDefault($attrs.itemsMethodValueKey, undefined);
                 this.itemValueKey = valueOrDefault($attrs.itemValueKey, undefined);
                 this.itemViewValueKey = valueOrDefault($attrs.itemViewValueKey, undefined);
@@ -57,7 +55,6 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
 
                 // the items, selected items and the query for the list
                 this.searchItems = [];
-                this.selectedItems = [];
                 this.searchQuery = undefined;
                 this.searchSelection = {
                     start: 0,
@@ -89,16 +86,7 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     '<button class="ion-autocomplete-cancel button button-clear" ng-click="viewModel.cancelClick()">{{viewModel.cancelLabel}}</button>',
                     '</div>',
                     '<ion-content class="has-header">',
-                    '',
-                    '<ion-item ng-if="viewModel.isArray(viewModel.selectedItems)" ng-repeat="selectedItem in viewModel.selectedItems track by $index" class="item-icon-left item-icon-right item-text-wrap">',
-                    '<i class="icon ion-checkmark"></i>',
                     '{{viewModel.getItemValue(selectedItem, viewModel.itemViewValueKey)}}',
-                    '</ion-item>',
-                    '<ion-item ng-if="!viewModel.isArray(viewModel.selectedItems)" class="item-icon-left item-icon-right item-text-wrap">',
-                    '<i class="icon ion-checkmark"></i>',
-                    '{{viewModel.getItemValue(viewModel.selectedItems, viewModel.itemViewValueKey)}}',
-                    '</ion-item>',
-                    '',
                     '<ion-item ng-repeat="item in viewModel.searchItems" item-height="55px" item-width="100%" ng-click="viewModel.selectItem(item)" class="item-text-wrap">',
                     '{{viewModel.getItemValue(item, viewModel.itemViewValueKey)}}',
                     '</ion-item>',
@@ -108,13 +96,7 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
 
                 // load the template synchronously or asynchronously
                 $q.when().then(function () {
-
-                    // first check if a template url is set and use this as template
-                    if (ionAutocompleteController.templateUrl) {
-                        return $templateRequest(ionAutocompleteController.templateUrl);
-                    } else {
-                        return template;
-                    }
+                    return template;
                 }).then(function (template) {
 
                     // compile the template
@@ -428,36 +410,12 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                         if (angular.isDefined(attrs.cancelButtonClickedMethod)) {
                             ionAutocompleteController.cancelButtonClickedMethod({
                                 callback: {
-                                    selectedItems: angular.isArray(ionAutocompleteController.selectedItems) ? ionAutocompleteController.selectedItems.slice() : ionAutocompleteController.selectedItems,
+                                    selectedItems: 'test',
                                     componentId: ionAutocompleteController.componentId
                                 }
                             });
                         }
                     };
-
-                    // watch the external model for changes and select the items inside the model
-                    scope.$watch("viewModel.externalModel", function (newModel) {
-
-                        if (angular.isArray(newModel) && newModel.length == 0) {
-                            // clear the selected items and set the view value and render it
-                            ionAutocompleteController.selectedItems = [];
-                            ngModelController.$setViewValue(ionAutocompleteController.selectedItems);
-                            ngModelController.$render();
-                            return;
-                        }
-
-                        // prepopulate view and selected items if external model is already set
-                        if (newModel && angular.isDefined(attrs.modelToItemMethod)) {
-                            if (angular.isArray(newModel)) {
-                                ionAutocompleteController.selectedItems = [];
-                                angular.forEach(newModel, function (modelValue) {
-                                    resolveAndSelectModelItem(modelValue);
-                                })
-                            } else {
-                                resolveAndSelectModelItem(newModel);
-                            }
-                        }
-                    });
 
                     // remove the component from the dom when scope is getting destroyed
                     scope.$on('$destroy', function () {
