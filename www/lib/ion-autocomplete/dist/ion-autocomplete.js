@@ -131,7 +131,6 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     var replaceSubstring = function(str, start, end, replacement) {
                         var prefix = str.substr(0, start);
                         var suffix = str.substr(end);
-                        console.log('Prefix suffix', prefix, suffix);
                         return prefix + replacement + suffix;
                     };
 
