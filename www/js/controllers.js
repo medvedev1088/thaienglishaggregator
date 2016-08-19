@@ -32,7 +32,7 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
 
     if (!$rootScope.input) {
         $rootScope.input = {
-            q: 'ประสบการณ์ หมายถึง ประสบการณ์ หมายถึง ความจัดเจนที่เกิดจากการกระทำหรือได้พบเห็นมา และประสบการณ์ก็เป็นสิ่งที่มีคุณค่าในการเรียนรู้ทุก    '
+            q: 'แบบฝึกฝนเพื่อเพิ่มพูนทักษะการใช้แป้นพิมพ์คอมพิวเตอร์'
         };
     }
     $scope.translation = {
