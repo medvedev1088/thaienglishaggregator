@@ -32,7 +32,7 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
 
     if (!$rootScope.input) {
         $rootScope.input = {
-            q: 'แบบฝึกฝนเพื่อเพิ่มพูนทักษะการใช้แป้นพิมพ์คอมพิวเตอร์'
+            q: 'อาหารไทยมีชื่อเสียงทั่วโลก'
         };
     }
     $scope.translation = {
