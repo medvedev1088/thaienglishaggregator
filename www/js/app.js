@@ -27,7 +27,9 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.directives
             restrict :  'A',
 
             link : function(scope, elem, attrs) {
-
+                var gestureType = attrs.gestureType;
+                elem.trigger(gestureType);
+                $ionicGesture.on(gestureType, scope.ionicGestureCallback, elem);
             }
         }
     })

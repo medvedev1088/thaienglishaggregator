@@ -365,7 +365,6 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
 
                     // click handler on the input field to show the search container
                     var onSwipe = function (event) {
-                        console.log('sw');
                         event.swipe = true;
                         onClick(event);
                     };

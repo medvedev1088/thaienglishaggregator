@@ -289,6 +289,9 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
     $scope.$on('$ionicView.enter', function() {
         $scope.updateHtml();
     })
+    $scope.ionicGestureCallback = function () {
+
+    }
 };
 
 
