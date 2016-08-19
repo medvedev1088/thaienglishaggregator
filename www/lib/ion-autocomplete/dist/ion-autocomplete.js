@@ -229,7 +229,9 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     searchInputElement.bind('keyup touchend mouseup focus', updateSearchSelection);
                     $ionicGesture.on('swipeleft', function() {
                         ionAutocompleteController.searchQuery = '';
-                    }, angular.element($document[0].querySelector('div.ion-autocomplete-container.' + ionAutocompleteController.randomCssClass)));
+                        searchInputElement[0].value = '';
+                        updateSearchSelection(true);
+                    }, angular.element($document[0].querySelector('div.ion-autocomplete-container.' + ionAutocompleteController.randomCssClass + ' .bar-header')));
 
                     // update the search items based on the returned value of the items-method
                     ionAutocompleteController.fetchSearchQuery = function (query, isInitializing) {
