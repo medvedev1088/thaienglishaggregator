@@ -32,8 +32,11 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
 
     if (!$rootScope.input) {
         $rootScope.input = {
-            q: 'อาหารไทยมีชื่อเสียงทั่วโลก'
+            q: ''
         };
+        if (devEnvironment) {
+            $rootScope.input.q = 'อาหารไทยมีชื่อเสียงทั่วโลก';
+        }
     }
     $scope.translation = {
         t: '',
