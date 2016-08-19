@@ -27,7 +27,7 @@ function htmlDecode(input){
     return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
 }
 
-var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicPopup, Thai2englishUrl, GoogleCompleteSearchUrl) {
+var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicPopup, ThaiToEnglishUrl, GoogleCompleteSearchUrl) {
     var $ = angular.element;
     $scope.input = {
         q: 'ประสบการณ์ หมายถึง ประสบการณ์ หมายถึง ความจัดเจนที่เกิดจากการกระทำหรือได้พบเห็นมา และประสบการณ์ก็เป็นสิ่งที่มีคุณค่าในการเรียนรู้ทุก    '
@@ -67,7 +67,7 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
         return translation;
     }
 
-    function convertThai2EnglishToTranslation(data) {
+    function convertThaiToEnglishToTranslation(data) {
         data = JSON.parse(data);
         console.log(data);
 
@@ -130,10 +130,10 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
             }
         }
 
-        function getThai2EnglishParams(q) {
+        function getThaiToEnglishParams(q) {
             return {
                 method: 'POST',
-                url:  Thai2englishUrl + '/ajax/AddNewQueryDoSpacing.aspx',
+                url:  ThaiToEnglishUrl + '/ajax/AddNewQueryDoSpacing.aspx',
                 params: {
                     unspacedText: q,
                     queryDivId: 'queryText'
@@ -148,8 +148,8 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
         var httpParams = {};
         if ($stateParams.tab === 'google') {
             httpParams = getGoogleParams(q);
-        } else if ($stateParams.tab === 'thai2english') {
-            httpParams = getThai2EnglishParams(q);
+        } else if ($stateParams.tab === 'thaiToEnglish') {
+            httpParams = getThaiToEnglishParams(q);
         }
 
         $http(httpParams).then(function successCallback(response) {
@@ -159,9 +159,9 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
             var translation;
             if ($stateParams.tab === 'google') {
                 translation = convertGoogleToTranslation(responseData);
-            } else if ($stateParams.tab === 'thai2english') {
+            } else if ($stateParams.tab === 'thaiToEnglish') {
                 try {
-                    translation = convertThai2EnglishToTranslation(responseData);
+                    translation = convertThaiToEnglishToTranslation(responseData);
                 } catch (err) {
                 $ionicPopup.alert({
                     title: err,
@@ -291,9 +291,9 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
 
 angular.module('app.controllers', [])
 
-    .controller('googleTranslateCtrl', ['$scope', '$stateParams', '$http', '$window', '$ionicPopup', 'Thai2englishUrl', 'Thai2englishUrl', controllerFunction])
+    .controller('googleTranslateCtrl', ['$scope', '$stateParams', '$http', '$window', '$ionicPopup', 'ThaiToEnglishUrl', 'ThaiToEnglishUrl', controllerFunction])
 
-    .controller('cartTabDefaultPageCtrl', ['$scope', '$stateParams', '$http', '$window', '$ionicPopup', 'Thai2englishUrl', 'Thai2englishUrl', controllerFunction])
+    .controller('thaiToEnglishCtrl', ['$scope', '$stateParams', '$http', '$window', '$ionicPopup', 'ThaiToEnglishUrl', 'ThaiToEnglishUrl', controllerFunction])
 
     .controller('cloudTabDefaultPageCtrl', ['$scope', '$stateParams', // TIP: Access Route Parameters for your page via $stateParams.parameterName
         function ($scope, $stateParams) {

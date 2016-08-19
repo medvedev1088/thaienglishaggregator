@@ -7,7 +7,7 @@
 // 'starter.controllers' is found in controllers.js
 var devEnvironment = localStorage.environment === 'dev';
 angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.directives','app.services', 'ion-autocomplete'])
-.constant('Thai2englishUrl', devEnvironment ? '': 'http://www.thai2english.com')
+.constant('ThaiToEnglishUrl', devEnvironment ? '': 'http://www.thai2english.com')
 .constant('GoogleCompleteSearchUrl', devEnvironment ? '': 'http://suggestqueries.google.com')
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
