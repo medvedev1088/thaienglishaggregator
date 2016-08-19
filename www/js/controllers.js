@@ -30,7 +30,7 @@ function htmlDecode(input){
 var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicPopup, Thai2englishUrl, GoogleCompleteSearchUrl) {
     var $ = angular.element;
     $scope.input = {
-        q: 'อาหารไทยมีชื่อเสียงทั่วโลก'
+        q: 'ประสบการณ์ หมายถึง ประสบการณ์ หมายถึง ความจัดเจนที่เกิดจากการกระทำหรือได้พบเห็นมา และประสบการณ์ก็เป็นสิ่งที่มีคุณค่าในการเรียนรู้ทุก    '
     };
     $scope.translation = {
         t: '',
@@ -104,11 +104,6 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
     }
 
     $scope.updateHtml = function () {
-        // $ionicPopup.alert({
-        //     title: ionic.Platform.platforms.join(),
-        //     template: 'test'
-        // });
-
         var q = $scope.input.q;
 
         console.log('search query', q);
@@ -287,7 +282,10 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
         }
 
         return promise;
-    }
+    };
+    $scope.$on('$ionicView.enter', function() {
+        $scope.updateHtml();
+    })
 };
 
 
