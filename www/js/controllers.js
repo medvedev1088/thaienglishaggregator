@@ -181,14 +181,10 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
 
         }, function errorCallback(response) {
             console.log(response);
-            if (!firstTimeFailed) {
-                callApi(true);
-            } else {
-                $ionicPopup.alert({
-                    title: 'Error!',
-                    template: response.data
-                });
-            }
+            $ionicPopup.alert({
+                title: 'Error!',
+                template: response.data
+            });
         });
     };
 
