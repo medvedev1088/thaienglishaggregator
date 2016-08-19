@@ -45,7 +45,7 @@ angular.module('app.routes', [])
                 abstract: true
             });
 
-        $urlRouterProvider.otherwise('/tabsController/thaiToEnglish?tab=thai2english')
+        $urlRouterProvider.otherwise('/tabsController/thaiToEnglish?tab=thaiToEnglish')
 
 
     });
