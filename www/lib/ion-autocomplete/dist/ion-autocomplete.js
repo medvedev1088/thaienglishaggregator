@@ -9,8 +9,8 @@
 'use strict';
 
 angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
-    '$ionicBackdrop', '$ionicScrollDelegate', '$document', '$q', '$parse', '$interpolate', '$ionicPlatform', '$compile', '$templateRequest',
-    function ($ionicBackdrop, $ionicScrollDelegate, $document, $q, $parse, $interpolate, $ionicPlatform, $compile, $templateRequest) {
+    '$ionicBackdrop', '$ionicScrollDelegate', '$document', '$q', '$parse', '$interpolate', '$ionicPlatform', '$compile', '$templateRequest', '$ionicGesture',
+    function ($ionicBackdrop, $ionicScrollDelegate, $document, $q, $parse, $interpolate, $ionicPlatform, $compile, $templateRequest, $ionicGesture) {
         return {
             require: ['ngModel', 'ionAutocomplete'],
             restrict: 'A',
@@ -227,6 +227,9 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     };
                     var searchInputElement = angular.element($document[0].querySelector('div.ion-autocomplete-container.' + ionAutocompleteController.randomCssClass + ' input'));
                     searchInputElement.bind('keyup touchend mouseup focus', updateSearchSelection);
+                    $ionicGesture.on('swipeleft', function() {
+                        ionAutocompleteController.searchQuery = '';
+                    }, searchInputElement);
 
                     // update the search items based on the returned value of the items-method
                     ionAutocompleteController.fetchSearchQuery = function (query, isInitializing) {
