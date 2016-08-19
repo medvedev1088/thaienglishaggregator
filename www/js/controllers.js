@@ -21,12 +21,6 @@ Optional.prototype.orElse = function(value) {
     return this.hasValue ? this.value : value;
 };
 
-function htmlDecode(input){
-    var e = document.createElement('div');
-    e.innerHTML = input;
-    return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
-}
-
 var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $window, $ionicPopup, ThaiToEnglishUrl) {
     var $ = angular.element;
 
@@ -95,7 +89,7 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
             words.push({
                 text: WordObject.Word,
                 tr: WordObject.Transliteration,
-                meaning: WordObject.Meanings[0].Meaning
+                meaning: stripHtml(WordObject.Meanings[0].Meaning)
             })
         }
 

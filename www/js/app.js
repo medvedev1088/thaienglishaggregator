@@ -5,6 +5,19 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
+
+function htmlDecode(input){
+    var e = document.createElement('div');
+    e.innerHTML = input;
+    return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+}
+
+function stripHtml(input) {
+    var container = document.createElement('div');
+    container.innerHTML = input;
+    return container.innerText || container.textContent;
+}
+
 var devEnvironment = localStorage.environment === 'dev';
 angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.directives','app.services', 'ion-autocomplete'])
 .constant('ThaiToEnglishUrl', devEnvironment ? '': 'http://www.thai2english.com')
