@@ -2,7 +2,7 @@
     <ion-content class="has-header">
         <form id="googleTranslate-form1">
 
-            <label class="item item-input " id="googleTranslate-input1">
+            <label  class="item item-input " id="search-input" >
                 <input
                     ion-autocomplete type="text"
                     placeholder="Tap to enter text"
@@ -14,6 +14,7 @@
                     ng-model="input.q"
                     items-method="callbackMethod(query, language)"
                     cancel-button-clicked-method="search(callback)"
+
                 />
             </label>
         </form>

@@ -56,6 +56,7 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                 // the items, selected items and the query for the list
                 this.searchItems = [];
                 this.searchQuery = undefined;
+                this.swipe = false;
                 this.searchSelection = {
                     start: 0,
                     end: 0
@@ -305,6 +306,10 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
 
                         // focus on the search input field
                         if (searchInputElement.length > 0) {
+                            if (ngModelController.$viewValue && !ionAutocompleteController.swipe) {
+                                ionAutocompleteController.searchQuery = ngModelController.$viewValue;
+                                searchInputElement[0].value = ionAutocompleteController.searchQuery;
+                            }
                             searchInputElement[0].focus();
                             setTimeout(function () {
                                 searchInputElement[0].focus();
@@ -359,9 +364,16 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     };
 
                     // click handler on the input field to show the search container
+                    var onSwipe = function (event) {
+                        console.log('sw');
+                        event.swipe = true;
+                        onClick(event);
+                    };
+
                     var onClick = function (event) {
+                        ionAutocompleteController.swipe = !!event.swipe;
                         // only open the dialog if was not touched at the beginning of a legitimate scroll event
-                        if (scrolling.moved) {
+                        if (scrolling.moved && !event.swipe) {
                             return;
                         }
 
@@ -396,6 +408,7 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                         element.bind('touchstart', onTouchStart);
                         element.bind('touchmove', onTouchMove);
                         element.bind('touchend click focus', onClick);
+                        element.bind('swipeleft', onSwipe);
                     }
 
                     // cancel handler for the cancel button which clears the search input field model and hides the
