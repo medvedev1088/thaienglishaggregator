@@ -1,4 +1,4 @@
-<ion-view title="Google Translate" id="page" class=" ">
+<ion-view title="{{title}}" id="page" class=" ">
     <ion-content class="has-header">
         <form id="googleTranslate-form1">
 
@@ -36,18 +36,21 @@
                 Dictionary
             </div>
             <div class="item item-text-wrap" ng-repeat="dictionaryEntry in translation.dictionary">
-                {{dictionaryEntry.meaning}}:
-                <span ng-repeat="synonym in dictionaryEntry.synonyms">
-                    {{synonym}}{{!$last ? ',' : ''}}
-                </span>
+                <h4>{{dictionaryEntry.meaning}}</h4>
+                <h3>
+                    <span ng-repeat="synonym in dictionaryEntry.synonyms">
+                        {{synonym}}{{!$last ? ',' : ''}}
+                    </span>
+                </h3>
+
             </div>
 
             <div class="item-divider padding" ng-show="translation.words.length">
                 Components
             </div>
             <div class="item item-text-wrap" ng-repeat="word in translation.words">
-                <h3><span class="positive">{{word.text}}</span> <span class="">{{word.tr}}</span></h3>
-                <h4>{{word.meaning}}</h4>
+                <h4><span class="positive">{{word.text}}</span> <span class="">{{word.tr}}</span></h4>
+                <h3>{{word.meaning}}</h3>
             </div>
             </div>
     </ion-content>

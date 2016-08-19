@@ -29,9 +29,18 @@ function htmlDecode(input){
 
 var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $window, $ionicPopup, ThaiToEnglishUrl) {
     var $ = angular.element;
-    $scope.input = {
-        q: 'ประสบการณ์ หมายถึง ประสบการณ์ หมายถึง ความจัดเจนที่เกิดจากการกระทำหรือได้พบเห็นมา และประสบการณ์ก็เป็นสิ่งที่มีคุณค่าในการเรียนรู้ทุก    '
-    };
+
+    if ($stateParams.tab === 'google') {
+        $scope.title = 'Google Translate';
+    } else if ($stateParams.tab === 'thaiToEnglish') {
+        $scope.title = 'thai2english';
+    }
+
+    if (!$rootScope.input) {
+        $rootScope.input = {
+            q: 'ประสบการณ์ หมายถึง ประสบการณ์ หมายถึง ความจัดเจนที่เกิดจากการกระทำหรือได้พบเห็นมา และประสบการณ์ก็เป็นสิ่งที่มีคุณค่าในการเรียนรู้ทุก    '
+        };
+    }
     $scope.translation = {
         t: '',
         tr: '',
