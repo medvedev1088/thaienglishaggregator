@@ -79,12 +79,13 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                 var template = [
                     '<div class="ion-autocomplete-container ' + ionAutocompleteController.randomCssClass + ' modal" style="display: none;">',
                     '<div class="bar bar-header item-input-inset">',
+                    '<form ng-submit="viewModel.cancelClick();" style="width:100%;padding-top: 0; margin-top:0">',
                     '<label class="item-input-wrapper">',
                     '<i class="icon ion-search placeholder-icon"></i>',
                     '<input type="search" class="ion-autocomplete-search" ng-model="viewModel.searchQuery" ng-model-options="viewModel.ngModelOptions" placeholder="English or ภาษาไทย" autocomplete="off" autocorrect="off" autocapitalize="off"/>',
                     '</label>',
-                    '<div class="ion-autocomplete-loading-icon" ng-if="viewModel.showLoadingIcon && viewModel.loadingIcon"><ion-spinner icon="{{viewModel.loadingIcon}}"></ion-spinner></div>',
-                    '<button class="ion-autocomplete-cancel button button-clear" ng-click="viewModel.cancelClick()">{{viewModel.cancelLabel}}</button>',
+                    '</form>',
+                    // '<button class="ion-autocomplete-cancel button button-clear" ng-click="viewModel.cancelClick();">{{viewModel.cancelLabel}}</button>',
                     '</div>',
                     '<ion-content class="has-header">',
                     '{{viewModel.getItemValue(selectedItem, viewModel.itemViewValueKey)}}',
@@ -227,9 +228,6 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     };
                     var searchInputElement = angular.element($document[0].querySelector('div.ion-autocomplete-container.' + ionAutocompleteController.randomCssClass + ' input'));
                     searchInputElement.bind('keyup touchend mouseup focus', updateSearchSelection);
-                    $ionicGesture.on('swipeleft', function() {
-                        ionAutocompleteController.searchQuery = '';
-                    }, searchInputElement);
 
                     // update the search items based on the returned value of the items-method
                     ionAutocompleteController.fetchSearchQuery = function (query, isInitializing) {
@@ -314,8 +312,10 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                                 searchInputElement[0].value = ionAutocompleteController.searchQuery;
                             }
                             searchInputElement[0].focus();
+                            updateSearchSelection(true);
                             setTimeout(function () {
                                 searchInputElement[0].focus();
+                                updateSearchSelection(true);
                                 searchInputElement.on('blur', function() {
                                     searchInputElement[0].focus();
                                 });
@@ -391,20 +391,6 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                         ionAutocompleteController.showModal();
                     };
 
-                    // function to call the model to item method and select the item
-                    var resolveAndSelectModelItem = function (modelValue) {
-                        // convert the given function to a $q promise to support promises too
-                        var promise = $q.when(ionAutocompleteController.modelToItemMethod({modelValue: modelValue}));
-
-                        promise.then(function (promiseData) {
-                            // select the item which are returned by the model to item method
-                            ionAutocompleteController.selectItem(promiseData);
-                        }, function (error) {
-                            // reject the error because we do not handle the error here
-                            return $q.reject(error);
-                        });
-                    };
-
                     // if the click is not handled externally, bind the handlers to the click and touch events of the input field
                     if (ionAutocompleteController.manageExternally == "false") {
                         element.bind('touchstart', onTouchStart);
@@ -416,6 +402,9 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     // cancel handler for the cancel button which clears the search input field model and hides the
                     // search container and the ionic backdrop and calls the cancel button clicked callback
                     ionAutocompleteController.cancelClick = function () {
+                        if (typeof cordova !== 'undefined') {
+                            cordova.plugins.Keyboard.close();
+                        }
                         ngModelController.$setViewValue(ionAutocompleteController.searchQuery);
                         ngModelController.$render();
                         ionAutocompleteController.hideModal();
