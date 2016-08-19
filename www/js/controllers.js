@@ -27,7 +27,7 @@ function htmlDecode(input){
     return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
 }
 
-var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicPopup, ThaiToEnglishUrl, GoogleCompleteSearchUrl) {
+var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $window, $ionicPopup, ThaiToEnglishUrl) {
     var $ = angular.element;
     $scope.input = {
         q: 'ประสบการณ์ หมายถึง ประสบการณ์ หมายถึง ความจัดเจนที่เกิดจากการกระทำหรือได้พบเห็นมา และประสบการณ์ก็เป็นสิ่งที่มีคุณค่าในการเรียนรู้ทุก    '
@@ -289,11 +289,13 @@ var controllerFunction = function ($scope, $stateParams, $http, $window, $ionicP
 };
 
 
+var ctrlParams = [
+    '$rootScope', '$scope', '$stateParams', '$http', '$window', '$ionicPopup',
+    'ThaiToEnglishUrl', controllerFunction
+];
 angular.module('app.controllers', [])
-
-    .controller('googleTranslateCtrl', ['$scope', '$stateParams', '$http', '$window', '$ionicPopup', 'ThaiToEnglishUrl', 'ThaiToEnglishUrl', controllerFunction])
-
-    .controller('thaiToEnglishCtrl', ['$scope', '$stateParams', '$http', '$window', '$ionicPopup', 'ThaiToEnglishUrl', 'ThaiToEnglishUrl', controllerFunction])
+    .controller('googleTranslateCtrl', ctrlParams)
+    .controller('thaiToEnglishCtrl', ctrlParams)
 
     .controller('cloudTabDefaultPageCtrl', ['$scope', '$stateParams', // TIP: Access Route Parameters for your page via $stateParams.parameterName
         function ($scope, $stateParams) {
