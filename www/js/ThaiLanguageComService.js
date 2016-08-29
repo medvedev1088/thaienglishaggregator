@@ -26,9 +26,7 @@ angular.module('app.services')
             }
         };
 
-        service.convertResponseToTranslation = function (data) {
-            console.log(data);
-            var html = $(data);
+        var parseBulk = function(html) {
             var translation = {};
 
             var MIDDLE_SECTION_ROW_COUNT = 4;
@@ -36,7 +34,6 @@ angular.module('app.services')
 
             var table = html.find('#old-content table').first();
             var rows = table.find('>tbody>tr');
-            console.log('table', table);
 
             var rowCount = table.find('tr').length;
             var wordCount = rowCount - MIDDLE_SECTION_ROW_COUNT - BUFFER_AROUND_MIDDLE_SECTION_ROW_COUNT * 2;
@@ -53,8 +50,6 @@ angular.module('app.services')
                     return MIDDLE_SECTION_ROW_COUNT + BUFFER_AROUND_MIDDLE_SECTION_ROW_COUNT * 2 + wordIndex;
                 }
             };
-
-            console.log(wordsRow);
 
             var words = [];
             wordsRow.find('>td').each(function(wordIndex) {
@@ -83,6 +78,34 @@ angular.module('app.services')
             translation.dictionary = dictionary;
 
             return translation;
+        };
+
+        var parseDictionary = function(html) {
+            var definitionRow = html.find('#old-content > table tr td:contains("definition")').parent();
+            var translation = {};
+
+            translation.t = definitionRow.find('td:eq(1)').text();
+            translation.tr = '';
+
+            translation.sp = '';
+
+            var dictionary = [];
+
+            translation.dictionary = dictionary;
+
+            return translation;
+        };
+
+        service.convertResponseToTranslation = function (data) {
+            var html = $(data);
+
+            var isBulk = html.find('#old-content h2:first').text().indexOf('Bulk') !== -1;
+
+            if (isBulk) {
+                return parseBulk(html);
+            } else {
+                return parseDictionary(html);
+            }
         };
 
         return service;

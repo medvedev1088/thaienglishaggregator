@@ -42,7 +42,6 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
         var httpParams = service.getRequestParams(q);
 
         $http(httpParams).then(function successCallback(response) {
-            console.log(response);
             var responseData = response.data;
 
             var translation;

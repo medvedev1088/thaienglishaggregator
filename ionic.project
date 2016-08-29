@@ -11,6 +11,10 @@
       "proxyUrl": "http://thai-language.com/default.aspx"
     },
     {
+      "path": "/id",
+      "proxyUrl": "http://thai-language.com/id"
+    },
+    {
       "path": "/complete/search",
       "proxyUrl": "http://suggestqueries.google.com/complete/search"
     }
