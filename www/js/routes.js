@@ -29,12 +29,12 @@ angular.module('app.routes', [])
                 }
             })
 
-            .state('tabsController.cloudTabDefaultPage', {
-                url: '/page4',
+            .state('tabsController.thaiLanguageComTab', {
+                url: '/thaiLanguageCom?tab',
                 views: {
-                    'tab3': {
-                        templateUrl: 'templates/cloudTabDefaultPage.html',
-                        controller: 'cloudTabDefaultPageCtrl'
+                    'thaiLanguageComTab': {
+                        templateUrl: 'templates/tabContent.html',
+                        controller: 'thaiLanguageComCtrl'
                     }
                 }
             })
@@ -45,7 +45,7 @@ angular.module('app.routes', [])
                 abstract: true
             });
 
-        $urlRouterProvider.otherwise('/tabsController/thaiToEnglish?tab=thaiToEnglish')
+        $urlRouterProvider.otherwise('/tabsController/thaiLanguageCom?tab=thaiLanguageCom')
 
 
     });

@@ -1,6 +1,6 @@
 var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $window, $ionicPopup,
                                    SuggestionsService,
-                                   GoogleTranslateService, ThaiToEnglishService) {
+                                   GoogleTranslateService, ThaiToEnglishService, ThaiLanguageComService) {
 
     var service = null;
 
@@ -8,6 +8,8 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
         service = GoogleTranslateService;
     } else if ($stateParams.tab === 'thaiToEnglish') {
         service = ThaiToEnglishService;
+    } else if ($stateParams.tab === 'thaiLanguageCom') {
+        service = ThaiLanguageComService;
     }
 
     $scope.title = service.getTitle();
@@ -87,11 +89,13 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
 var ctrlParams = [
     '$rootScope', '$scope', '$stateParams', '$http', '$window', '$ionicPopup',
     'SuggestionsService',
-    'GoogleTranslateService', 'ThaiToEnglishService', controllerFunction
+    'GoogleTranslateService', 'ThaiToEnglishService', 'ThaiLanguageComService',
+    controllerFunction
 ];
 angular.module('app.controllers', [])
     .controller('googleTranslateCtrl', ctrlParams)
     .controller('thaiToEnglishCtrl', ctrlParams)
+    .controller('thaiLanguageComCtrl', ctrlParams)
 
     .controller('cloudTabDefaultPageCtrl', ['$scope', '$stateParams', // TIP: Access Route Parameters for your page via $stateParams.parameterName
         function ($scope, $stateParams) {
