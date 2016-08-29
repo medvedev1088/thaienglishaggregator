@@ -18,6 +18,14 @@ function stripHtml(input) {
     return container.innerText || container.textContent;
 }
 
+function copyProperties(source, dest) {
+    for (var prop in source) {
+        if (source.hasOwnProperty(prop)) {
+            dest[prop] = source[prop];
+        }
+    }
+}
+
 // Optional
 
 function Optional(value) {

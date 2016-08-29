@@ -2,6 +2,10 @@ angular.module('app.services')
 .service('GoogleTranslateService', [function(){
     var service = {};
 
+    service.getTitle = function() {
+        return 'Google Translate';
+    };
+
     service.getRequestParams = function(q) {
         return {
             method: 'GET',

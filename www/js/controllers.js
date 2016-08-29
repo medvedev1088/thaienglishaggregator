@@ -1,12 +1,15 @@
 var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $window, $ionicPopup,
                                    GoogleTranslateService, ThaiToEnglishService) {
-    var $ = angular.element;
+
+    var service = null;
 
     if ($stateParams.tab === 'google') {
-        $scope.title = 'Google Translate';
+        service = GoogleTranslateService;
     } else if ($stateParams.tab === 'thaiToEnglish') {
-        $scope.title = 'thai2english';
+        service = ThaiToEnglishService;
     }
+
+    $scope.title = service.getTitle();
 
     if (!$rootScope.input) {
         $rootScope.input = {
@@ -28,42 +31,25 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
         link: ''
     };
 
-    function copyProperties(source, dest) {
-        for (var prop in source) {
-            if (source.hasOwnProperty(prop)) {
-                dest[prop] = source[prop];
-            }
-        }
-    }
-
     $scope.updateHtml = function () {
         var q = $scope.input.q;
 
         console.log('search query', q);
 
-        var httpParams = {};
-        if ($stateParams.tab === 'google') {
-            httpParams = GoogleTranslateService.getRequestParams(q);
-        } else if ($stateParams.tab === 'thaiToEnglish') {
-            httpParams = ThaiToEnglishService.getRequestParams(q);
-        }
+        var httpParams = service.getRequestParams(q);
 
         $http(httpParams).then(function successCallback(response) {
             console.log(response);
             var responseData = response.data;
 
             var translation;
-            if ($stateParams.tab === 'google') {
-                translation = GoogleTranslateService.convertResponseToTranslation(responseData);
-            } else if ($stateParams.tab === 'thaiToEnglish') {
-                try {
-                    translation = ThaiToEnglishService.convertResponseToTranslation(responseData);
-                } catch (err) {
+            try {
+                translation = service.convertResponseToTranslation(responseData);
+            } catch (err) {
                 $ionicPopup.alert({
                     title: err,
                     template: 'test'
                 });
-                }
             }
 
             $scope.translation = {
@@ -177,7 +163,7 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
     };
     $scope.$on('$ionicView.enter', function() {
         $scope.updateHtml();
-    })
+    });
     $scope.ionicGestureCallback = function () {
 
     }

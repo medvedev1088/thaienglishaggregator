@@ -2,6 +2,10 @@ angular.module('app.services')
 .service('ThaiToEnglishService', ['ThaiToEnglishUrl', function(ThaiToEnglishUrl){
     var service = {};
 
+    service.getTitle = function() {
+        return 'thai2english';
+    };
+
     service.getRequestParams = function(q) {
         return {
             method: 'POST',
