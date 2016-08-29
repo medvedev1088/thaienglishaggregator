@@ -54,6 +54,7 @@ Optional.prototype.orElse = function(value) {
 var devEnvironment = localStorage.environment === 'dev';
 angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.directives','app.services', 'ion-autocomplete'])
 .constant('ThaiToEnglishUrl', devEnvironment ? '': 'http://www.thai2english.com')
+.constant('ThaiLanguageComUrl', devEnvironment ? '': 'http://thai-language.com')
 .constant('GoogleCompleteSearchUrl', devEnvironment ? '': 'http://suggestqueries.google.com')
     .directive('detectGestures', function($ionicGesture) {
         return {

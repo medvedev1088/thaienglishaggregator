@@ -7,6 +7,10 @@
       "proxyUrl": "http://www.thai2english.com/ajax/AddNewQueryDoSpacing.aspx"
     },
     {
+      "path": "/default.aspx",
+      "proxyUrl": "http://thai-language.com/default.aspx"
+    },
+    {
       "path": "/complete/search",
       "proxyUrl": "http://suggestqueries.google.com/complete/search"
     }
