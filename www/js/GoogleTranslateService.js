@@ -1,4 +1,4 @@
-angular.module('app.services', [])
+angular.module('app.services')
 .service('GoogleTranslateService', [function(){
     var service = {};
 

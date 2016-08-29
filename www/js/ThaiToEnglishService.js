@@ -1,5 +1,5 @@
-angular.module('app.services', [])
-.service('ThaiToEnglishService', [function(){
+angular.module('app.services')
+.service('ThaiToEnglishService', 'ThaiToEnglishUrl', [function(ThaiToEnglishUrl){
     var service = {};
 
     service.getRequestParams = function(q) {

@@ -1,4 +1,4 @@
-var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $window, $ionicPopup, ThaiToEnglishUrl,
+var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $window, $ionicPopup,
                                    GoogleTranslateService, ThaiToEnglishService) {
     var $ = angular.element;
 
@@ -186,7 +186,7 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
 
 var ctrlParams = [
     '$rootScope', '$scope', '$stateParams', '$http', '$window', '$ionicPopup',
-    'ThaiToEnglishUrl', 'GoogleTranslateService', 'ThaiToEnglishService', controllerFunction
+    'GoogleTranslateService', 'ThaiToEnglishService', controllerFunction
 ];
 angular.module('app.controllers', [])
     .controller('googleTranslateCtrl', ctrlParams)
