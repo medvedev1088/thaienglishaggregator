@@ -1,5 +1,7 @@
 angular.module('app.services')
     .service('ThaiLanguageComService', ['ThaiLanguageComUrl', function (ThaiLanguageComUrl) {
+        var $ = angular.element;
+
         var service = {};
 
         service.getTitle = function () {
@@ -58,10 +60,15 @@ angular.module('app.services')
             wordsRow.find('>td').each(function(wordIndex) {
                 var translationRowIndex = calcTranslationRowIndex(wordIndex);
                 var translationRow = rows.eq(translationRowIndex);
+
+                var meanings = translationRow.find('>td').last().find('>dl>dd').map(function() {
+                    return $(this).text();
+                });
+
                 words.push({
                     text: $(this).text(),
                     tr: transliterationCells.eq(wordIndex).html(),
-                    meaning: translationRow.find('>td').last().text()
+                    meanings: meanings
                 })
             });
             translation.words = words;

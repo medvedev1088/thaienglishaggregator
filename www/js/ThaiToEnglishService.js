@@ -1,5 +1,7 @@
 angular.module('app.services')
     .service('ThaiToEnglishService', ['ThaiToEnglishUrl', function (ThaiToEnglishUrl) {
+        var $ = angular.element;
+
         var service = {};
 
         service.getTitle = function () {
@@ -42,7 +44,7 @@ angular.module('app.services')
                 words.push({
                     text: WordObject.Word,
                     tr: WordObject.Transliteration,
-                    meaning: stripHtml(WordObject.Meanings[0].Meaning)
+                    meanings: [stripHtml(WordObject.Meanings[0].Meaning)]
                 });
             }
 

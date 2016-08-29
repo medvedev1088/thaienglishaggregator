@@ -53,7 +53,7 @@
             </div>
             <div class="item item-text-wrap" ng-repeat="word in translation.words">
                 <h4><span class="positive">{{word.text}}</span> <span ng-bind-html="word.tr"></span></h4>
-                <h3>{{word.meaning}}</h3>
+                <h3 ng-repeat="meaning in word.meanings">{{meaning}}</h3>
             </div>
             </div>
     </ion-content>
