@@ -1,27 +1,5 @@
-function Optional(value) {
-    this.value = value;
-    this.hasValue = !!value;
-}
-
-Optional.prototype.forEach = function(func) {
-    if (this.hasValue && this.value.length) {
-        for (var i = 0; i < this.value.length; i++) {
-            func(new Optional(this.value[i]));
-        }
-    }
-};
-
-Optional.prototype.get = function(index) {
-    return this.hasValue && this.value.length && this.value.length > index
-        ? new Optional(this.value[index])
-        : new Optional(null);
-};
-
-Optional.prototype.orElse = function(value) {
-    return this.hasValue ? this.value : value;
-};
-
-var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $window, $ionicPopup, ThaiToEnglishUrl) {
+var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $window, $ionicPopup, ThaiToEnglishUrl,
+                                   GoogleTranslateService, ThaiToEnglishService) {
     var $ = angular.element;
 
     if ($stateParams.tab === 'google') {
@@ -50,57 +28,6 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
         link: ''
     };
 
-    function convertGoogleToTranslation(data) {
-        data = eval(data);
-        var translation = {};
-
-        translation.t = new Optional(data).get(0).get(0).get(0).orElse('');
-        translation.tr = new Optional(data).get(0).get(1).get(3).orElse('');
-
-        translation.sp = new Optional(data).get(1).get(0).get(0).orElse('');
-
-        var dictionary = [];
-        new Optional(data).get(1).get(0).get(2).forEach(function(dictEntry) {
-            var meaning = dictEntry.get(0).orElse('');
-            var synonyms = dictEntry.get(1).orElse('');
-            dictionary.push({
-                meaning: meaning,
-                synonyms: synonyms
-            })
-        });
-        translation.dictionary = dictionary;
-
-        return translation;
-    }
-
-    function convertThaiToEnglishToTranslation(data) {
-        data = JSON.parse(data);
-        console.log(data);
-
-        var translation = {};
-
-        var Query = $(data.Query);
-        var transcription = $.makeArray(Query.find('li.listTlitLine > span')).map(function(e) {return e.innerText}).join(' ');
-        translation.tr = transcription;
-
-        var Sentences = data.Sentences;
-        var Sentence = Sentences[0];
-        var WordObjects = Sentence.WordObjects;
-        var words = [];
-        for (var i = 0; i < WordObjects.length; i++) {
-            var WordObject = WordObjects[i];
-            words.push({
-                text: WordObject.Word,
-                tr: WordObject.Transliteration,
-                meaning: stripHtml(WordObject.Meanings[0].Meaning)
-            })
-        }
-
-        translation.words = words;
-
-        return translation;
-    }
-
     function copyProperties(source, dest) {
         for (var prop in source) {
             if (source.hasOwnProperty(prop)) {
@@ -114,48 +41,11 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
 
         console.log('search query', q);
 
-        function getGoogleParams(q) {
-            return {
-                method: 'GET',
-                url: 'https://translate.googleapis.com/translate_a/single?client=gtx',
-                params: {
-                    sl: 'th',
-                    tl: 'en',
-                    dt: [
-                        't', // translation
-                        'at', // alternate translations
-                        'rm', // transcription
-                        'bd', // dictionary
-                        'ex' // examples
-                    ],
-                    q: q
-                },
-                transformResponse: [function (data) {
-                    return data;
-                }]
-            }
-        }
-
-        function getThaiToEnglishParams(q) {
-            return {
-                method: 'POST',
-                url:  ThaiToEnglishUrl + '/ajax/AddNewQueryDoSpacing.aspx',
-                params: {
-                    unspacedText: q,
-                    queryDivId: 'queryText'
-                },
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                transformResponse: [function (data) {
-                    return data;
-                }]
-            }
-        }
-
         var httpParams = {};
         if ($stateParams.tab === 'google') {
-            httpParams = getGoogleParams(q);
+            httpParams = GoogleTranslateService.getRequestParams(q);
         } else if ($stateParams.tab === 'thaiToEnglish') {
-            httpParams = getThaiToEnglishParams(q);
+            httpParams = ThaiToEnglishService.getRequestParams(q);
         }
 
         $http(httpParams).then(function successCallback(response) {
@@ -164,10 +54,10 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
 
             var translation;
             if ($stateParams.tab === 'google') {
-                translation = convertGoogleToTranslation(responseData);
+                translation = GoogleTranslateService.convertResponseToTranslation(responseData);
             } else if ($stateParams.tab === 'thaiToEnglish') {
                 try {
-                    translation = convertThaiToEnglishToTranslation(responseData);
+                    translation = ThaiToEnglishService.convertResponseToTranslation(responseData);
                 } catch (err) {
                 $ionicPopup.alert({
                     title: err,
@@ -296,7 +186,7 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
 
 var ctrlParams = [
     '$rootScope', '$scope', '$stateParams', '$http', '$window', '$ionicPopup',
-    'ThaiToEnglishUrl', controllerFunction
+    'ThaiToEnglishUrl', 'GoogleTranslateService', 'ThaiToEnglishService', controllerFunction
 ];
 angular.module('app.controllers', [])
     .controller('googleTranslateCtrl', ctrlParams)

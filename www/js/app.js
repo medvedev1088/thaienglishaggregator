@@ -18,6 +18,31 @@ function stripHtml(input) {
     return container.innerText || container.textContent;
 }
 
+// Optional
+
+function Optional(value) {
+    this.value = value;
+    this.hasValue = !!value;
+}
+
+Optional.prototype.forEach = function(func) {
+    if (this.hasValue && this.value.length) {
+        for (var i = 0; i < this.value.length; i++) {
+            func(new Optional(this.value[i]));
+        }
+    }
+};
+
+Optional.prototype.get = function(index) {
+    return this.hasValue && this.value.length && this.value.length > index
+        ? new Optional(this.value[index])
+        : new Optional(null);
+};
+
+Optional.prototype.orElse = function(value) {
+    return this.hasValue ? this.value : value;
+};
+
 var devEnvironment = localStorage.environment === 'dev';
 angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.directives','app.services', 'ion-autocomplete'])
 .constant('ThaiToEnglishUrl', devEnvironment ? '': 'http://www.thai2english.com')
