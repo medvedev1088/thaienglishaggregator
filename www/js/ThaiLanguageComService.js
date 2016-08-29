@@ -10,13 +10,14 @@ angular.module('app.services')
             return {
                 method: 'POST',
                 url: ThaiLanguageComUrl + '/default.aspx',
-                params: {
+                data: $.param({
                     xlate: q,
                     format: 'Spiral',
                     gather: 'on',
                     tdx: 8,
                     allowtis620: 'on'
-                },
+                }),
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                 transformResponse: [function (data) {
                     return data;
                 }]
@@ -24,23 +25,23 @@ angular.module('app.services')
         };
 
         service.convertResponseToTranslation = function (data) {
-            data = eval(data);
+            console.log(data);
+            var html = $(data);
+
+            var table = html.find('#old-content table');
+            console.log('table', table);
+            var rowCount = table.find('tr').length;
+            console.log(rowCount);
+
             var translation = {};
 
-            translation.t = new Optional(data).get(0).get(0).get(0).orElse('');
-            translation.tr = new Optional(data).get(0).get(1).get(3).orElse('');
+            translation.t = '';
+            translation.tr = '';
 
-            translation.sp = new Optional(data).get(1).get(0).get(0).orElse('');
+            translation.sp = '';
 
             var dictionary = [];
-            new Optional(data).get(1).get(0).get(2).forEach(function (dictEntry) {
-                var meaning = dictEntry.get(0).orElse('');
-                var synonyms = dictEntry.get(1).orElse('');
-                dictionary.push({
-                    meaning: meaning,
-                    synonyms: synonyms
-                })
-            });
+
             translation.dictionary = dictionary;
 
             return translation;
