@@ -1,4 +1,4 @@
-var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $window, $ionicPopup,
+var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $window, $ionicPopup, $ionicLoading,
                                    SuggestionsService,
                                    GoogleTranslateService, ThaiToEnglishService, ThaiLanguageComService) {
 
@@ -41,6 +41,7 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
 
         var httpParams = service.getRequestParams(q);
 
+        $scope.startLoading();
         $http(httpParams).then(function successCallback(response) {
             var responseData = response.data;
 
@@ -59,9 +60,10 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
             };
 
             copyProperties(translation, $scope.translation);
-
+            $scope.endLoading();
         }, function errorCallback(response) {
             console.log(response);
+            $scope.endLoading();
             $ionicPopup.alert({
                 title: 'Error!',
                 template: response.data
@@ -81,12 +83,21 @@ var controllerFunction = function ($rootScope, $scope, $stateParams, $http, $win
     });
     $scope.ionicGestureCallback = function () {
 
-    }
+    };
+
+    $scope.startLoading = function() {
+        $ionicLoading.show({
+            template: 'Loading...'
+        });
+    };
+    $scope.endLoading = function(){
+        $ionicLoading.hide();
+    };
 };
 
 
 var ctrlParams = [
-    '$rootScope', '$scope', '$stateParams', '$http', '$window', '$ionicPopup',
+    '$rootScope', '$scope', '$stateParams', '$http', '$window', '$ionicPopup', '$ionicLoading',
     'SuggestionsService',
     'GoogleTranslateService', 'ThaiToEnglishService', 'ThaiLanguageComService',
     controllerFunction
