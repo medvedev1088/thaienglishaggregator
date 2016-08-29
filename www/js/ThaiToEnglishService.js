@@ -43,7 +43,7 @@ angular.module('app.services')
                     text: WordObject.Word,
                     tr: WordObject.Transliteration,
                     meaning: stripHtml(WordObject.Meanings[0].Meaning)
-                })
+                });
             }
 
             translation.words = words;

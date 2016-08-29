@@ -27,13 +27,44 @@ angular.module('app.services')
         service.convertResponseToTranslation = function (data) {
             console.log(data);
             var html = $(data);
-
-            var table = html.find('#old-content table');
-            console.log('table', table);
-            var rowCount = table.find('tr').length;
-            console.log(rowCount);
-
             var translation = {};
+
+            var MIDDLE_SECTION_ROW_COUNT = 4;
+            var BUFFER_AROUND_MIDDLE_SECTION_ROW_COUNT = 1;
+
+            var table = html.find('#old-content table').first();
+            var rows = table.find('>tbody>tr');
+            console.log('table', table);
+
+            var rowCount = table.find('tr').length;
+            var wordCount = rowCount - MIDDLE_SECTION_ROW_COUNT - BUFFER_AROUND_MIDDLE_SECTION_ROW_COUNT * 2;
+            var wordTopCount = Math.floor(wordCount / 2);
+
+            var wordsRow = rows.eq(wordTopCount + BUFFER_AROUND_MIDDLE_SECTION_ROW_COUNT);
+            var transliterationRow = rows.eq(wordTopCount + BUFFER_AROUND_MIDDLE_SECTION_ROW_COUNT + 2);
+            var transliterationCells = transliterationRow.find('>td');
+
+            var calcTranslationRowIndex = function(wordIndex) {
+                if (wordIndex < wordTopCount) {
+                    return wordIndex;
+                } else {
+                    return MIDDLE_SECTION_ROW_COUNT + BUFFER_AROUND_MIDDLE_SECTION_ROW_COUNT * 2 + wordIndex;
+                }
+            };
+
+            console.log(wordsRow);
+
+            var words = [];
+            wordsRow.find('>td').each(function(wordIndex) {
+                var translationRowIndex = calcTranslationRowIndex(wordIndex);
+                var translationRow = rows.eq(translationRowIndex);
+                words.push({
+                    text: $(this).text(),
+                    tr: transliterationCells.eq(wordIndex).html(),
+                    meaning: translationRow.find('>td').last().text()
+                })
+            });
+            translation.words = words;
 
             translation.t = '';
             translation.tr = '';
