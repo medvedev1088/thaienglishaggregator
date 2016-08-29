@@ -16,7 +16,7 @@ angular.module('app.services')
                     xlate: q,
                     format: 'Spiral',
                     gather: 'on',
-                    tdx: 8,
+                    tdx: 20,
                     allowtis620: 'on'
                 }),
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
